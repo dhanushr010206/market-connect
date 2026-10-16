@@ -150,6 +150,7 @@ function ErrorBlock({ message, retry }: { message: string; retry: () => void }) 
 
 function Marketplace() {
   const [mode, setMode] = useState<'WHOLESALE' | 'RETAIL'>('RETAIL');
+  const [marketView, setMarketView] = useState<'listings' | 'catalog'>('listings');
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All goods');
   const [organic, setOrganic] = useState(false);
@@ -220,24 +221,33 @@ function Marketplace() {
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-6">
         <div><div className="font-mono uppercase text-[10px] tracking-[.2em] text-[#558269] mb-2">The neighborhood market</div><h2 className="font-serif text-[34px] sm:text-[40px] font-extrabold tracking-[-.05em] text-[#20313a]">Fresh from the source<span className="text-[#d19e37]">.</span></h2><p className="text-sm text-[#78837b] mt-2">Meet the people behind the good stuff.</p></div>
         <div className="flex flex-wrap gap-2 items-center">
-          <div className="flex gap-1 bg-[#e9e5da] rounded-full p-1">
+          {marketView === 'listings' && <div className="flex gap-1 bg-[#e9e5da] rounded-full p-1">
             {(['RETAIL', 'WHOLESALE'] as const).map((value) => <button key={value} onClick={() => setMode(value)} className={`rounded-full px-4 py-2 text-[11px] font-bold tracking-[.08em] transition-colors ${mode === value ? 'bg-[#347653] text-white shadow-sm' : 'text-[#64746b] hover:text-[#20313a]'}`} data-testid={`button-mode-${value.toLowerCase()}`}>{value === 'RETAIL' ? 'For the table' : 'For business'}</button>)}
-          </div>
+          </div>}
           <button onClick={() => setCartOpen(true)} className="relative inline-flex items-center gap-2 rounded-full bg-[#20313a] text-[#f8f5eb] px-4 py-2.5 text-xs font-bold hover:bg-[#2b414c]" data-testid="button-open-cart"><ShoppingCart size={15}/> Basket <span className="min-w-5 h-5 rounded-full bg-[#efbd59] text-[#20313a] grid place-items-center text-[10px]">{itemCount}</span></button>
         </div>
       </div>
-      <div className="flex flex-col xl:flex-row gap-3 mb-7">
-        <label className="relative flex-1"><Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#869188]"/><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Try tomatoes, sourdough, orchard…" className="w-full h-12 rounded-xl bg-[#fffdf7] border border-[#e0dccf] pl-11 pr-4 text-sm outline-none focus:border-[#72a581] focus:ring-2 focus:ring-[#347653]/10" data-testid="input-product-search"/></label>
-        <div className="flex gap-2 overflow-x-auto">
-          {categories.map((item) => <button key={item} onClick={() => setCategory(item)} className={`whitespace-nowrap rounded-xl px-4 h-12 text-xs font-semibold border transition-colors ${category === item ? 'bg-[#dce9dc] border-[#a9c7aa] text-[#347653]' : 'bg-[#fffdf7] border-[#e0dccf] text-[#69756d] hover:border-[#a9c7aa]'}`} data-testid={`filter-category-${item.toLowerCase().replaceAll(' ', '-')}`}>{item}</button>)}
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="inline-flex w-fit gap-1 rounded-xl bg-[#e9e5da] p-1" role="tablist" aria-label="Marketplace view">
+          <button type="button" role="tab" aria-selected={marketView === 'listings'} onClick={() => setMarketView('listings')} className={`rounded-lg px-4 py-2.5 text-xs font-bold transition-colors ${marketView === 'listings' ? 'bg-[#fffdf7] text-[#347653] shadow-sm' : 'text-[#64746b] hover:text-[#20313a]'}`} data-testid="tab-supplier-listings">Supplier listings</button>
+          <button type="button" role="tab" aria-selected={marketView === 'catalog'} onClick={() => setMarketView('catalog')} className={`rounded-lg px-4 py-2.5 text-xs font-bold transition-colors ${marketView === 'catalog' ? 'bg-[#fffdf7] text-[#347653] shadow-sm' : 'text-[#64746b] hover:text-[#20313a]'}`} data-testid="tab-product-catalog">Browse product catalog</button>
         </div>
-        <button onClick={() => setOrganic(!organic)} className={`h-12 px-4 rounded-xl border inline-flex items-center gap-2 text-xs font-bold ${organic ? 'bg-[#dce9dc] text-[#347653] border-[#a9c7aa]' : 'bg-[#fffdf7] text-[#69756d] border-[#e0dccf]'}`} data-testid="filter-organic"><Leaf size={15}/> Organic</button>
+        {marketView === 'catalog' && <p className="text-xs text-[#78837b]">Catalog reference only. Availability is shown in supplier listings.</p>}
       </div>
       {orderMessage && <div className="mb-5 p-4 rounded-xl bg-[#dce9dc] text-[#286344] text-sm font-semibold flex gap-2 items-center" role="status" data-testid="status-order-success"><CheckCircle2 size={18}/>{orderMessage}</div>}
-      {products.isLoading ? <ProductSkeleton/> : products.isError ? <ErrorBlock message="Market listings are having a moment." retry={() => void products.refetch()}/> : productList.length === 0 ? <EmptyMarket search={search} clear={() => { setSearch(''); setCategory('All goods'); setOrganic(false); }}/> :
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-5 gap-y-6">
-          {productList.map((product, i) => <ProductCard key={product.id} product={product} mode={mode} delay={i} onAdd={() => addToCart(product)} onMessage={() => user ? setLocation('/messages') : setLocation('/login')}/>)}
-        </div>}
+      {marketView === 'catalog' ? <MarketplaceCatalog onCheckListings={(title) => { setSearch(title); setCategory('All goods'); setOrganic(false); setMarketView('listings'); }} /> : <>
+        <div className="flex flex-col xl:flex-row gap-3 mb-7">
+          <label className="relative flex-1"><Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#869188]"/><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Try tomatoes, sourdough, orchard…" className="w-full h-12 rounded-xl bg-[#fffdf7] border border-[#e0dccf] pl-11 pr-4 text-sm outline-none focus:border-[#72a581] focus:ring-2 focus:ring-[#347653]/10" data-testid="input-product-search"/></label>
+          <div className="flex gap-2 overflow-x-auto">
+            {categories.map((item) => <button key={item} onClick={() => setCategory(item)} className={`whitespace-nowrap rounded-xl px-4 h-12 text-xs font-semibold border transition-colors ${category === item ? 'bg-[#dce9dc] border-[#a9c7aa] text-[#347653]' : 'bg-[#fffdf7] border-[#e0dccf] text-[#69756d] hover:border-[#a9c7aa]'}`} data-testid={`filter-category-${item.toLowerCase().replaceAll(' ', '-')}`}>{item}</button>)}
+          </div>
+          <button onClick={() => setOrganic(!organic)} className={`h-12 px-4 rounded-xl border inline-flex items-center gap-2 text-xs font-bold ${organic ? 'bg-[#dce9dc] text-[#347653] border-[#a9c7aa]' : 'bg-[#fffdf7] text-[#69756d] border-[#e0dccf]'}`} data-testid="filter-organic"><Leaf size={15}/> Organic</button>
+        </div>
+        {products.isLoading ? <ProductSkeleton/> : products.isError ? <ErrorBlock message="Market listings are having a moment." retry={() => void products.refetch()}/> : productList.length === 0 ? <EmptyMarket search={search} clear={() => { setSearch(''); setCategory('All goods'); setOrganic(false); }}/> :
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-5 gap-y-6">
+            {productList.map((product, i) => <ProductCard key={product.id} product={product} mode={mode} delay={i} onAdd={() => addToCart(product)} onMessage={() => user ? setLocation('/messages') : setLocation('/login')}/>)}
+          </div>}
+      </>}
       <div className="mt-12 p-6 sm:p-8 rounded-2xl bg-[#e8eee3] flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start gap-4"><div className="w-10 h-10 shrink-0 grid place-items-center bg-[#347653] text-white rounded-full"><Sprout size={19}/></div><div><p className="font-serif font-extrabold text-xl tracking-[-.03em] text-[#20313a]">Make your next good thing local.</p><p className="text-sm text-[#6e7f70] mt-1">Are you growing, making or raising something nearby?</p></div></div>
         <Link href="/register" className="shrink-0 rounded-full border border-[#9ab79c] text-[#347653] px-5 py-3 text-xs font-bold hover:bg-white/60 transition-colors" data-testid="link-become-producer">Bring your harvest <ArrowRight size={14} className="inline ml-1"/></Link>
@@ -253,6 +263,93 @@ function Marketplace() {
       <button className="primary-button w-full" disabled={createOrder.isPending} data-testid="button-submit-order">{createOrder.isPending ? 'Placing your order…' : `Place order · ${money(total)}`}</button>
     </form></Modal>}
   </main>;
+}
+
+function MarketplaceCatalog({ onCheckListings }: { onCheckListings: (title: string) => void }) {
+  const [search, setSearch] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const normalizedSearch = search.trim().toLocaleLowerCase();
+  const totalChoices = productCatalog.reduce((total, catalogCategory) => total + catalogCategory.groups.reduce((count, group) => count + 1 + group.varieties.length, 0), 0);
+  const selectedCategories = activeCategory
+    ? productCatalog.filter((catalogCategory) => catalogCategory.name === activeCategory)
+    : productCatalog;
+  const results = selectedCategories.map((catalogCategory) => {
+    const categoryMatches = normalizedSearch.length > 0 && catalogCategory.name.toLocaleLowerCase().includes(normalizedSearch);
+    const groups = catalogCategory.groups.flatMap((group) => {
+      const groupMatches = normalizedSearch.length > 0 && group.name.toLocaleLowerCase().includes(normalizedSearch);
+      const varieties = !normalizedSearch || categoryMatches || groupMatches
+        ? group.varieties
+        : group.varieties.filter((variety) => variety.toLocaleLowerCase().includes(normalizedSearch));
+      const includeProduct = !normalizedSearch || categoryMatches || groupMatches;
+      return includeProduct || varieties.length ? [{ group, includeProduct, varieties }] : [];
+    });
+    return { catalogCategory, groups };
+  }).filter((result) => result.groups.length > 0);
+  const matchingChoices = results.reduce((total, result) => total + result.groups.reduce((count, item) => count + (item.includeProduct ? 1 : 0) + item.varieties.length, 0), 0);
+
+  return <div className="space-y-6" data-testid="marketplace-catalog">
+    <div className="rounded-[22px] bg-[#e8eee3] border border-[#d9e2d3] p-5 sm:p-7">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5">
+        <div>
+          <div className="font-mono uppercase text-[10px] tracking-[.18em] text-[#558269] mb-2">The SupplyLink catalog</div>
+          <h3 className="font-serif text-2xl sm:text-3xl font-extrabold tracking-[-.04em] text-[#20313a]">{productCatalog.length} categories. {totalChoices} product and variety names.</h3>
+          <p className="mt-2 text-sm text-[#6e7f70]">Browse the range, then check whether a nearby producer has listed it.</p>
+        </div>
+        <label className="relative w-full lg:max-w-md shrink-0">
+          <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#869188]"/>
+          <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search categories, products or varieties…" className="w-full h-12 rounded-xl bg-[#fffdf7] border border-[#d5dfd1] pl-11 pr-4 text-sm outline-none focus:border-[#72a581] focus:ring-2 focus:ring-[#347653]/10" data-testid="input-catalog-search"/>
+        </label>
+      </div>
+    </div>
+
+    {search && <div className="flex flex-wrap items-center justify-between gap-3">
+      <p className="text-sm text-[#69756d]" role="status">{matchingChoices} matching catalog choices</p>
+      <button type="button" onClick={() => { setSearch(''); setActiveCategory(null); }} className="text-xs font-bold text-[#347653] underline underline-offset-2">Clear search</button>
+    </div>}
+
+    {!normalizedSearch && !activeCategory ? <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+      {productCatalog.map((catalogCategory) => {
+        const count = catalogCategory.groups.reduce((total, group) => total + 1 + group.varieties.length, 0);
+        return <button key={catalogCategory.code} type="button" onClick={() => setActiveCategory(catalogCategory.name)} className="group rounded-2xl bg-[#fffdf7] border border-[#e4dfd3] p-5 text-left hover:border-[#91b398] hover:shadow-sm transition-all" data-testid={`catalog-category-${catalogCategory.code.toLowerCase()}`}>
+          <div className="flex items-start justify-between gap-3">
+            <div><span className="font-mono text-[10px] uppercase tracking-[.16em] text-[#b28b3a]">Category {catalogCategory.code}</span><h4 className="mt-2 font-serif font-extrabold text-lg leading-snug text-[#20313a]">{catalogCategory.name.replace(/^[A-L]\.\s*/, '')}</h4></div>
+            <span className="rounded-full bg-[#e8eee3] px-3 py-1.5 text-[10px] font-bold text-[#347653] whitespace-nowrap">{count} choices</span>
+          </div>
+          <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-[#558269] group-hover:text-[#347653]">Browse category <ArrowRight size={13}/></span>
+        </button>;
+      })}
+    </div> : results.length ? <div className="space-y-7">
+      {activeCategory && <div className="flex flex-wrap items-center gap-3">
+        <button type="button" onClick={() => setActiveCategory(null)} className="inline-flex items-center gap-1.5 rounded-full border border-[#d7d2c6] bg-[#fffdf7] px-3 py-2 text-xs font-bold text-[#52665a] hover:border-[#91b398]"><ArrowLeft size={14}/> All categories</button>
+        <span className="font-serif text-xl font-extrabold text-[#20313a]">{activeCategory.replace(/^[A-L]\.\s*/, '')}</span>
+        {!normalizedSearch && <span className="text-xs text-[#78837b]">{matchingChoices} product and variety choices</span>}
+      </div>}
+      {results.map(({ catalogCategory, groups }) => <section key={catalogCategory.code} aria-label={catalogCategory.name}>
+        {normalizedSearch && <h4 className="mb-3 font-serif text-xl font-extrabold text-[#20313a]">{catalogCategory.name}</h4>}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {groups.map(({ group, includeProduct, varieties }) => <CatalogGroupCard key={`${catalogCategory.code}-${group.name}`} group={group} includeProduct={includeProduct} varieties={varieties} onCheckListings={onCheckListings}/>)}
+        </div>
+      </section>)}
+    </div> : <div className="rounded-2xl border border-dashed border-[#c9c6b7] bg-[#f0ede4] py-12 px-5 text-center">
+      <h4 className="font-serif text-xl font-extrabold text-[#20313a]">No catalog matches yet.</h4>
+      <p className="mt-2 text-sm text-[#7d887e]">Try another product, variety or category name.</p>
+    </div>}
+  </div>;
+}
+
+function CatalogGroupCard({ group, includeProduct, varieties, onCheckListings }: { group: { name: string; varieties: string[] }; includeProduct: boolean; varieties: string[]; onCheckListings: (title: string) => void }) {
+  return <article className="rounded-2xl bg-[#fffdf7] border border-[#e4dfd3] p-4 sm:p-5">
+    <div className="flex items-start justify-between gap-3">
+      <h5 className="font-bold text-sm text-[#20313a]">{group.name}</h5>
+      {includeProduct && <button type="button" onClick={() => onCheckListings(group.name)} className="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold text-[#347653] hover:underline underline-offset-2">Check listings <ArrowUpRight size={12}/></button>}
+    </div>
+    {varieties.length > 0 && <div className="mt-3 border-t border-[#eee9df] pt-3">
+      <p className="mb-2 text-[9px] font-mono uppercase tracking-[.15em] text-[#8b948a]">Varieties</p>
+      <div className="flex flex-wrap gap-1.5">
+        {varieties.map((variety) => <button key={variety} type="button" onClick={() => onCheckListings(`${group.name} — ${variety}`)} className="rounded-full bg-[#eef1e9] px-2.5 py-1.5 text-[10px] font-semibold text-[#52665a] hover:bg-[#dce9dc] hover:text-[#347653] transition-colors" data-testid={`catalog-variety-${variety.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>{variety} <ArrowUpRight size={10} className="inline ml-0.5"/></button>)}
+      </div>
+    </div>}
+  </article>;
 }
 
 function priceFor(product: Product, mode: 'RETAIL' | 'WHOLESALE') { return mode === 'WHOLESALE' ? product.wholesalePrice : product.retailPrice; }
