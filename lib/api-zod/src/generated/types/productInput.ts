@@ -23,26 +23,4 @@ export interface ProductInput {
   imageUrl: string;
   isOrganic: boolean;
   isActive?: boolean;
-  catalogProductId: string;
-  /** @nullable */
-  varietyId?: string | null;
-  /**
-     * @minLength 3
-     * @maxLength 3
-     */
-  currency?: string;
-  /**
-     * @minimum 1
-     * @nullable
-     */
-  maxOrderQuantity?: number | null;
-  /** @nullable */
-  qualityGrade?: string | null;
-  /** @nullable */
-  harvestDate?: Date | null;
-  /** @nullable */
-  availableFrom?: Date | null;
-  deliveryAreas?: string[];
-  /** @minimum 0 */
-  deliveryFee?: number;
 }

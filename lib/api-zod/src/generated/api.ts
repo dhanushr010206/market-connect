@@ -118,11 +118,6 @@ export const GetProductsQueryParams = zod.object({
   "organic": zod.coerce.boolean().optional()
 })
 
-export const getProductsResponseCurrencyMin = 3;
-export const getProductsResponseCurrencyMax = 3;
-
-
-
 export const GetProductsResponseItem = zod.object({
   "id": zod.string(),
   "producerId": zod.string(),
@@ -140,19 +135,6 @@ export const GetProductsResponseItem = zod.object({
   "imageUrl": zod.string(),
   "isOrganic": zod.boolean(),
   "isActive": zod.boolean(),
-  "catalogProductId": zod.string().nullable(),
-  "varietyId": zod.string().nullable(),
-  "varietyName": zod.string().nullable(),
-  "mainCategory": zod.string().nullish(),
-  "subcategory": zod.string().nullish(),
-  "currency": zod.string().min(getProductsResponseCurrencyMin).max(getProductsResponseCurrencyMax),
-  "maxOrderQuantity": zod.number().int().nullable(),
-  "qualityGrade": zod.string().nullable(),
-  "harvestDate": zod.coerce.date().nullable(),
-  "availableFrom": zod.coerce.date().nullable(),
-  "deliveryAreas": zod.array(zod.string()),
-  "deliveryFee": zod.number(),
-  "isSample": zod.boolean(),
   "createdAt": zod.coerce.date()
 })
 export const GetProductsResponse = zod.array(GetProductsResponseItem)
@@ -170,14 +152,6 @@ export const createProductBodyWholesalePriceMin = 0;
 
 export const createProductBodyStockQuantityMin = 0;
 
-export const createProductBodyCurrencyDefault = `INR`;
-export const createProductBodyCurrencyMin = 3;
-export const createProductBodyCurrencyMax = 3;
-
-
-export const createProductBodyDeliveryFeeDefault = 0;
-export const createProductBodyDeliveryFeeMin = 0;
-
 
 
 export const CreateProductBody = zod.object({
@@ -191,22 +165,8 @@ export const CreateProductBody = zod.object({
   "stockQuantity": zod.number().int().min(createProductBodyStockQuantityMin),
   "imageUrl": zod.string(),
   "isOrganic": zod.boolean(),
-  "isActive": zod.boolean().optional(),
-  "catalogProductId": zod.string().uuid(),
-  "varietyId": zod.string().uuid().nullish(),
-  "currency": zod.string().min(createProductBodyCurrencyMin).max(createProductBodyCurrencyMax).default(createProductBodyCurrencyDefault),
-  "maxOrderQuantity": zod.number().int().min(1).nullish(),
-  "qualityGrade": zod.string().nullish(),
-  "harvestDate": zod.coerce.date().nullish(),
-  "availableFrom": zod.coerce.date().nullish(),
-  "deliveryAreas": zod.array(zod.string()).optional(),
-  "deliveryFee": zod.number().min(createProductBodyDeliveryFeeMin).default(createProductBodyDeliveryFeeDefault)
+  "isActive": zod.boolean().optional()
 })
-
-export const createProductResponseCurrencyMin = 3;
-export const createProductResponseCurrencyMax = 3;
-
-
 
 export const CreateProductResponse = zod.object({
   "id": zod.string(),
@@ -225,19 +185,6 @@ export const CreateProductResponse = zod.object({
   "imageUrl": zod.string(),
   "isOrganic": zod.boolean(),
   "isActive": zod.boolean(),
-  "catalogProductId": zod.string().nullable(),
-  "varietyId": zod.string().nullable(),
-  "varietyName": zod.string().nullable(),
-  "mainCategory": zod.string().nullish(),
-  "subcategory": zod.string().nullish(),
-  "currency": zod.string().min(createProductResponseCurrencyMin).max(createProductResponseCurrencyMax),
-  "maxOrderQuantity": zod.number().int().nullable(),
-  "qualityGrade": zod.string().nullable(),
-  "harvestDate": zod.coerce.date().nullable(),
-  "availableFrom": zod.coerce.date().nullable(),
-  "deliveryAreas": zod.array(zod.string()),
-  "deliveryFee": zod.number(),
-  "isSample": zod.boolean(),
   "createdAt": zod.coerce.date()
 })
 
@@ -257,9 +204,6 @@ export const updateProductBodyStockQuantityMin = 0;
 
 
 
-export const updateProductBodyDeliveryFeeMin = 0;
-
-
 
 export const UpdateProductBody = zod.object({
   "title": zod.string().optional(),
@@ -268,21 +212,9 @@ export const UpdateProductBody = zod.object({
   "wholesalePrice": zod.number().min(updateProductBodyWholesalePriceMin).optional(),
   "stockQuantity": zod.number().int().min(updateProductBodyStockQuantityMin).optional(),
   "isActive": zod.boolean().optional(),
-  "varietyId": zod.string().uuid().nullish(),
   "unit": zod.string().optional(),
-  "moq": zod.number().int().min(1).optional(),
-  "maxOrderQuantity": zod.number().int().min(1).nullish(),
-  "qualityGrade": zod.string().nullish(),
-  "harvestDate": zod.coerce.date().nullish(),
-  "availableFrom": zod.coerce.date().nullish(),
-  "deliveryAreas": zod.array(zod.string()).optional(),
-  "deliveryFee": zod.number().min(updateProductBodyDeliveryFeeMin).optional()
+  "moq": zod.number().int().min(1).optional()
 })
-
-export const updateProductResponseCurrencyMin = 3;
-export const updateProductResponseCurrencyMax = 3;
-
-
 
 export const UpdateProductResponse = zod.object({
   "id": zod.string(),
@@ -301,19 +233,6 @@ export const UpdateProductResponse = zod.object({
   "imageUrl": zod.string(),
   "isOrganic": zod.boolean(),
   "isActive": zod.boolean(),
-  "catalogProductId": zod.string().nullable(),
-  "varietyId": zod.string().nullable(),
-  "varietyName": zod.string().nullable(),
-  "mainCategory": zod.string().nullish(),
-  "subcategory": zod.string().nullish(),
-  "currency": zod.string().min(updateProductResponseCurrencyMin).max(updateProductResponseCurrencyMax),
-  "maxOrderQuantity": zod.number().int().nullable(),
-  "qualityGrade": zod.string().nullable(),
-  "harvestDate": zod.coerce.date().nullable(),
-  "availableFrom": zod.coerce.date().nullable(),
-  "deliveryAreas": zod.array(zod.string()),
-  "deliveryFee": zod.number(),
-  "isSample": zod.boolean(),
   "createdAt": zod.coerce.date()
 })
 
@@ -401,11 +320,6 @@ export const GetCatalogProductParams = zod.object({
   "slug": zod.coerce.string()
 })
 
-export const getCatalogProductResponseTwoOffersItemCurrencyMin = 3;
-export const getCatalogProductResponseTwoOffersItemCurrencyMax = 3;
-
-
-
 export const GetCatalogProductResponse = zod.object({
   "id": zod.string().uuid(),
   "name": zod.string(),
@@ -453,19 +367,6 @@ export const GetCatalogProductResponse = zod.object({
   "imageUrl": zod.string(),
   "isOrganic": zod.boolean(),
   "isActive": zod.boolean(),
-  "catalogProductId": zod.string().nullable(),
-  "varietyId": zod.string().nullable(),
-  "varietyName": zod.string().nullable(),
-  "mainCategory": zod.string().nullish(),
-  "subcategory": zod.string().nullish(),
-  "currency": zod.string().min(getCatalogProductResponseTwoOffersItemCurrencyMin).max(getCatalogProductResponseTwoOffersItemCurrencyMax),
-  "maxOrderQuantity": zod.number().int().nullable(),
-  "qualityGrade": zod.string().nullable(),
-  "harvestDate": zod.coerce.date().nullable(),
-  "availableFrom": zod.coerce.date().nullable(),
-  "deliveryAreas": zod.array(zod.string()),
-  "deliveryFee": zod.number(),
-  "isSample": zod.boolean(),
   "createdAt": zod.coerce.date()
 }))
 }))
@@ -668,11 +569,6 @@ export const CreateCatalogProductBody = zod.object({
 })).optional()
 })
 
-export const createCatalogProductResponseTwoOffersItemCurrencyMin = 3;
-export const createCatalogProductResponseTwoOffersItemCurrencyMax = 3;
-
-
-
 export const CreateCatalogProductResponse = zod.object({
   "id": zod.string().uuid(),
   "name": zod.string(),
@@ -720,19 +616,6 @@ export const CreateCatalogProductResponse = zod.object({
   "imageUrl": zod.string(),
   "isOrganic": zod.boolean(),
   "isActive": zod.boolean(),
-  "catalogProductId": zod.string().nullable(),
-  "varietyId": zod.string().nullable(),
-  "varietyName": zod.string().nullable(),
-  "mainCategory": zod.string().nullish(),
-  "subcategory": zod.string().nullish(),
-  "currency": zod.string().min(createCatalogProductResponseTwoOffersItemCurrencyMin).max(createCatalogProductResponseTwoOffersItemCurrencyMax),
-  "maxOrderQuantity": zod.number().int().nullable(),
-  "qualityGrade": zod.string().nullable(),
-  "harvestDate": zod.coerce.date().nullable(),
-  "availableFrom": zod.coerce.date().nullable(),
-  "deliveryAreas": zod.array(zod.string()),
-  "deliveryFee": zod.number(),
-  "isSample": zod.boolean(),
   "createdAt": zod.coerce.date()
 }))
 }))
@@ -773,11 +656,6 @@ export const UpdateCatalogProductBody = zod.object({
   "attributes": zod.record(zod.string(), zod.unknown()).optional()
 })).optional()
 })
-
-export const updateCatalogProductResponseTwoOffersItemCurrencyMin = 3;
-export const updateCatalogProductResponseTwoOffersItemCurrencyMax = 3;
-
-
 
 export const UpdateCatalogProductResponse = zod.object({
   "id": zod.string().uuid(),
@@ -826,19 +704,6 @@ export const UpdateCatalogProductResponse = zod.object({
   "imageUrl": zod.string(),
   "isOrganic": zod.boolean(),
   "isActive": zod.boolean(),
-  "catalogProductId": zod.string().nullable(),
-  "varietyId": zod.string().nullable(),
-  "varietyName": zod.string().nullable(),
-  "mainCategory": zod.string().nullish(),
-  "subcategory": zod.string().nullish(),
-  "currency": zod.string().min(updateCatalogProductResponseTwoOffersItemCurrencyMin).max(updateCatalogProductResponseTwoOffersItemCurrencyMax),
-  "maxOrderQuantity": zod.number().int().nullable(),
-  "qualityGrade": zod.string().nullable(),
-  "harvestDate": zod.coerce.date().nullable(),
-  "availableFrom": zod.coerce.date().nullable(),
-  "deliveryAreas": zod.array(zod.string()),
-  "deliveryFee": zod.number(),
-  "isSample": zod.boolean(),
   "createdAt": zod.coerce.date()
 }))
 }))

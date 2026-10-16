@@ -601,7 +601,7 @@ components:
         certifications: { type: string }
     Product:
       type: object
-      required: [id, producerId, producerName, producerCity, producerRating, title, description, category, unit, retailPrice, wholesalePrice, moq, stockQuantity, imageUrl, isOrganic, isActive, catalogProductId, varietyId, varietyName, currency, maxOrderQuantity, qualityGrade, harvestDate, availableFrom, deliveryAreas, deliveryFee, isSample, createdAt]
+      required: [id, producerId, producerName, producerCity, producerRating, title, description, category, unit, retailPrice, wholesalePrice, moq, stockQuantity, imageUrl, isOrganic, isActive, createdAt]
       properties:
         id: { type: string }
         producerId: { type: string }
@@ -619,25 +619,10 @@ components:
         imageUrl: { type: string }
         isOrganic: { type: boolean }
         isActive: { type: boolean }
-        catalogProductId: { type: ["string", "null"] }
-        varietyId: { type: ["string", "null"] }
-        varietyName: { type: ["string", "null"] }
-        mainCategory: { type: ["string", "null"] }
-        subcategory: { type: ["string", "null"] }
-        currency: { type: string, minLength: 3, maxLength: 3 }
-        maxOrderQuantity: { type: ["integer", "null"] }
-        qualityGrade: { type: ["string", "null"] }
-        harvestDate: { type: ["string", "null"], format: date }
-        availableFrom: { type: ["string", "null"], format: date }
-        deliveryAreas:
-          type: array
-          items: { type: string }
-        deliveryFee: { type: number }
-        isSample: { type: boolean }
         createdAt: { type: string, format: date-time }
     ProductInput:
       type: object
-      required: [title, description, category, unit, retailPrice, wholesalePrice, moq, stockQuantity, imageUrl, isOrganic, catalogProductId]
+      required: [title, description, category, unit, retailPrice, wholesalePrice, moq, stockQuantity, imageUrl, isOrganic]
       properties:
         title: { type: string, minLength: 2 }
         description: { type: string }
@@ -650,17 +635,6 @@ components:
         imageUrl: { type: string }
         isOrganic: { type: boolean }
         isActive: { type: boolean }
-        catalogProductId: { type: string, format: uuid }
-        varietyId: { type: ["string", "null"], format: uuid }
-        currency: { type: string, minLength: 3, maxLength: 3, default: INR }
-        maxOrderQuantity: { type: ["integer", "null"], minimum: 1 }
-        qualityGrade: { type: ["string", "null"] }
-        harvestDate: { type: ["string", "null"], format: date }
-        availableFrom: { type: ["string", "null"], format: date }
-        deliveryAreas:
-          type: array
-          items: { type: string }
-        deliveryFee: { type: number, minimum: 0, default: 0 }
     ProductUpdate:
       type: object
       properties:
@@ -670,17 +644,8 @@ components:
         wholesalePrice: { type: number, minimum: 0 }
         stockQuantity: { type: integer, minimum: 0 }
         isActive: { type: boolean }
-        varietyId: { type: ["string", "null"], format: uuid }
         unit: { type: string }
         moq: { type: integer, minimum: 1 }
-        maxOrderQuantity: { type: ["integer", "null"], minimum: 1 }
-        qualityGrade: { type: ["string", "null"] }
-        harvestDate: { type: ["string", "null"], format: date }
-        availableFrom: { type: ["string", "null"], format: date }
-        deliveryAreas:
-          type: array
-          items: { type: string }
-        deliveryFee: { type: number, minimum: 0 }
     OrderItemInput:
       type: object
       required: [productId, quantity]

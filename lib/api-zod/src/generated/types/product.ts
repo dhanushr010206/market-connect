@@ -23,31 +23,5 @@ export interface Product {
   imageUrl: string;
   isOrganic: boolean;
   isActive: boolean;
-  /** @nullable */
-  catalogProductId: string | null;
-  /** @nullable */
-  varietyId: string | null;
-  /** @nullable */
-  varietyName: string | null;
-  /** @nullable */
-  mainCategory?: string | null;
-  /** @nullable */
-  subcategory?: string | null;
-  /**
-     * @minLength 3
-     * @maxLength 3
-     */
-  currency: string;
-  /** @nullable */
-  maxOrderQuantity: number | null;
-  /** @nullable */
-  qualityGrade: string | null;
-  /** @nullable */
-  harvestDate: Date | null;
-  /** @nullable */
-  availableFrom: Date | null;
-  deliveryAreas: string[];
-  deliveryFee: number;
-  isSample: boolean;
   createdAt: Date;
 }

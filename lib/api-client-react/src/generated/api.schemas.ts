@@ -89,32 +89,6 @@ export interface Product {
   imageUrl: string;
   isOrganic: boolean;
   isActive: boolean;
-  /** @nullable */
-  catalogProductId: string | null;
-  /** @nullable */
-  varietyId: string | null;
-  /** @nullable */
-  varietyName: string | null;
-  /** @nullable */
-  mainCategory?: string | null;
-  /** @nullable */
-  subcategory?: string | null;
-  /**
-     * @minLength 3
-     * @maxLength 3
-     */
-  currency: string;
-  /** @nullable */
-  maxOrderQuantity: number | null;
-  /** @nullable */
-  qualityGrade: string | null;
-  /** @nullable */
-  harvestDate: string | null;
-  /** @nullable */
-  availableFrom: string | null;
-  deliveryAreas: string[];
-  deliveryFee: number;
-  isSample: boolean;
   createdAt: string;
 }
 
@@ -135,28 +109,6 @@ export interface ProductInput {
   imageUrl: string;
   isOrganic: boolean;
   isActive?: boolean;
-  catalogProductId: string;
-  /** @nullable */
-  varietyId?: string | null;
-  /**
-     * @minLength 3
-     * @maxLength 3
-     */
-  currency?: string;
-  /**
-     * @minimum 1
-     * @nullable
-     */
-  maxOrderQuantity?: number | null;
-  /** @nullable */
-  qualityGrade?: string | null;
-  /** @nullable */
-  harvestDate?: string | null;
-  /** @nullable */
-  availableFrom?: string | null;
-  deliveryAreas?: string[];
-  /** @minimum 0 */
-  deliveryFee?: number;
 }
 
 export interface ProductUpdate {
@@ -169,25 +121,9 @@ export interface ProductUpdate {
   /** @minimum 0 */
   stockQuantity?: number;
   isActive?: boolean;
-  /** @nullable */
-  varietyId?: string | null;
   unit?: string;
   /** @minimum 1 */
   moq?: number;
-  /**
-     * @minimum 1
-     * @nullable
-     */
-  maxOrderQuantity?: number | null;
-  /** @nullable */
-  qualityGrade?: string | null;
-  /** @nullable */
-  harvestDate?: string | null;
-  /** @nullable */
-  availableFrom?: string | null;
-  deliveryAreas?: string[];
-  /** @minimum 0 */
-  deliveryFee?: number;
 }
 
 export interface OrderItemInput {
