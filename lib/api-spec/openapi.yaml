@@ -3,13 +3,23 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: SupplyLink marketplace API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: User authentication and profiles
+  - name: products
+    description: Marketplace listings
+  - name: orders
+    description: Buyer and seller orders
+  - name: messages
+    description: Buyer and seller conversations
+  - name: dashboard
+    description: Producer analytics
 paths:
   /healthz:
     get:
@@ -24,7 +34,273 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Sign in with an email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Authenticated user and token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSession"
+        "401":
+          description: Invalid credentials
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Create a SupplyLink account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Created account and signed-in session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSession"
+        "409":
+          description: Email is already registered
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get the authenticated user's profile
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Authentication required
+  /products:
+    get:
+      operationId: getProducts
+      tags: [products]
+      summary: Search marketplace products
+      parameters:
+        - name: search
+          in: query
+          schema: { type: string }
+        - name: category
+          in: query
+          schema: { type: string }
+        - name: mode
+          in: query
+          schema: { type: string, enum: [WHOLESALE, RETAIL] }
+        - name: organic
+          in: query
+          schema: { type: boolean }
+      responses:
+        "200":
+          description: Matching listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Product" }
+    post:
+      operationId: createProduct
+      tags: [products]
+      summary: Create a product listing as a producer
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductInput" }
+      responses:
+        "201":
+          description: Created listing
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+  /products/{id}:
+    patch:
+      operationId: updateProduct
+      tags: [products]
+      summary: Update a producer's listing
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductUpdate" }
+      responses:
+        "200":
+          description: Updated listing
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "404":
+          description: Listing not found
+    delete:
+      operationId: deleteProduct
+      tags: [products]
+      summary: Remove a producer's listing
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Listing removed
+  /orders:
+    get:
+      operationId: getOrders
+      tags: [orders]
+      summary: List orders for the current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Buyer orders or producer incoming orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Order" }
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Place an order from the marketplace
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OrderInput" }
+      responses:
+        "201":
+          description: One new order per producer in the cart
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OrderBatch" }
+        "409":
+          description: Stock or minimum-order requirement not met
+  /orders/{id}/status:
+    patch:
+      operationId: updateOrderStatus
+      tags: [orders]
+      summary: Move an incoming order through its fulfillment pipeline
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OrderStatusInput" }
+      responses:
+        "200":
+          description: Updated order
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Order" }
+  /messages/threads:
+    get:
+      operationId: getMessageThreads
+      tags: [messages]
+      summary: List the current user's conversations
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Conversation list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/MessageThread" }
+  /messages/{userId}:
+    get:
+      operationId: getMessages
+      tags: [messages]
+      summary: Get conversation history with another user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Conversation history
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Message" }
+  /messages:
+    post:
+      operationId: sendMessage
+      tags: [messages]
+      summary: Send a message or a price quote
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MessageInput" }
+      responses:
+        "201":
+          description: Sent message
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get producer overview metrics and sales series
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Producer dashboard data
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DashboardSummary" }
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     HealthStatus:
       type: object
@@ -33,4 +309,188 @@ components:
           type: string
       required:
         - status
+    User:
+      type: object
+      required: [id, name, email, role, address, city]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        email: { type: string }
+        role: { type: string, enum: [PRODUCER, RETAILER, CUSTOMER] }
+        phone: { type: ["string", "null"] }
+        address: { type: string }
+        city: { type: string }
+        businessName: { type: ["string", "null"] }
+        certifications: { type: ["string", "null"] }
+        rating: { type: number }
+        createdAt: { type: string, format: date-time }
+    AuthSession:
+      type: object
+      required: [token, user]
+      properties:
+        token: { type: string }
+        user: { $ref: "#/components/schemas/User" }
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8 }
+    RegisterInput:
+      type: object
+      required: [name, email, password, role, address, city]
+      properties:
+        name: { type: string, minLength: 2 }
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8 }
+        role: { type: string, enum: [PRODUCER, RETAILER, CUSTOMER] }
+        phone: { type: string }
+        address: { type: string, minLength: 3 }
+        city: { type: string, minLength: 2 }
+        businessName: { type: string }
+        certifications: { type: string }
+    Product:
+      type: object
+      required: [id, producerId, producerName, producerCity, producerRating, title, description, category, unit, retailPrice, wholesalePrice, moq, stockQuantity, imageUrl, isOrganic, isActive, createdAt]
+      properties:
+        id: { type: string }
+        producerId: { type: string }
+        producerName: { type: string }
+        producerCity: { type: string }
+        producerRating: { type: number }
+        title: { type: string }
+        description: { type: string }
+        category: { type: string }
+        unit: { type: string }
+        retailPrice: { type: number }
+        wholesalePrice: { type: number }
+        moq: { type: integer }
+        stockQuantity: { type: integer }
+        imageUrl: { type: string }
+        isOrganic: { type: boolean }
+        isActive: { type: boolean }
+        createdAt: { type: string, format: date-time }
+    ProductInput:
+      type: object
+      required: [title, description, category, unit, retailPrice, wholesalePrice, moq, stockQuantity, imageUrl, isOrganic]
+      properties:
+        title: { type: string, minLength: 2 }
+        description: { type: string }
+        category: { type: string }
+        unit: { type: string }
+        retailPrice: { type: number, minimum: 0 }
+        wholesalePrice: { type: number, minimum: 0 }
+        moq: { type: integer, minimum: 1 }
+        stockQuantity: { type: integer, minimum: 0 }
+        imageUrl: { type: string }
+        isOrganic: { type: boolean }
+        isActive: { type: boolean }
+    ProductUpdate:
+      type: object
+      properties:
+        title: { type: string }
+        description: { type: string }
+        retailPrice: { type: number, minimum: 0 }
+        wholesalePrice: { type: number, minimum: 0 }
+        stockQuantity: { type: integer, minimum: 0 }
+        isActive: { type: boolean }
+    OrderItemInput:
+      type: object
+      required: [productId, quantity]
+      properties:
+        productId: { type: string }
+        quantity: { type: integer, minimum: 1 }
+    OrderInput:
+      type: object
+      required: [orderType, deliveryAddress, items]
+      properties:
+        orderType: { type: string, enum: [WHOLESALE, RETAIL] }
+        deliveryAddress: { type: string, minLength: 3 }
+        items:
+          type: array
+          minItems: 1
+          items: { $ref: "#/components/schemas/OrderItemInput" }
+    OrderStatusInput:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [ACCEPTED, PROCESSING, DISPATCHED, DELIVERED, CANCELLED] }
+    OrderLine:
+      type: object
+      required: [id, productId, title, imageUrl, unit, quantity, unitPrice]
+      properties:
+        id: { type: string }
+        productId: { type: string }
+        title: { type: string }
+        imageUrl: { type: string }
+        unit: { type: string }
+        quantity: { type: integer }
+        unitPrice: { type: number }
+    Order:
+      type: object
+      required: [id, buyerId, buyerName, sellerId, sellerName, totalAmount, orderType, status, deliveryAddress, createdAt, items]
+      properties:
+        id: { type: string }
+        buyerId: { type: string }
+        buyerName: { type: string }
+        sellerId: { type: string }
+        sellerName: { type: string }
+        totalAmount: { type: number }
+        orderType: { type: string, enum: [WHOLESALE, RETAIL] }
+        status: { type: string, enum: [PENDING, ACCEPTED, PROCESSING, DISPATCHED, DELIVERED, CANCELLED] }
+        deliveryAddress: { type: string }
+        createdAt: { type: string, format: date-time }
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/OrderLine" }
+    OrderBatch:
+      type: array
+      items: { $ref: "#/components/schemas/Order" }
+    Message:
+      type: object
+      required: [id, senderId, receiverId, senderName, content, timestamp]
+      properties:
+        id: { type: string }
+        senderId: { type: string }
+        receiverId: { type: string }
+        senderName: { type: string }
+        productId: { type: ["string", "null"] }
+        content: { type: string }
+        quoteAmount: { type: ["number", "null"] }
+        timestamp: { type: string, format: date-time }
+    MessageInput:
+      type: object
+      required: [receiverId, content]
+      properties:
+        receiverId: { type: string }
+        productId: { type: ["string", "null"] }
+        content: { type: string, minLength: 1 }
+        quoteAmount: { type: ["number", "null"], minimum: 0 }
+    MessageThread:
+      type: object
+      required: [userId, name, role, lastMessage, timestamp, unread]
+      properties:
+        userId: { type: string }
+        name: { type: string }
+        role: { type: string }
+        lastMessage: { type: string }
+        timestamp: { type: string, format: date-time }
+        unread: { type: integer }
+    SalesPoint:
+      type: object
+      required: [month, sales]
+      properties:
+        month: { type: string }
+        sales: { type: number }
+    DashboardSummary:
+      type: object
+      required: [revenue, activeOrders, pendingInquiries, lowStockCount, sales]
+      properties:
+        revenue: { type: number }
+        activeOrders: { type: integer }
+        pendingInquiries: { type: integer }
+        lowStockCount: { type: integer }
+        sales:
+          type: array
+          items: { $ref: "#/components/schemas/SalesPoint" }
 

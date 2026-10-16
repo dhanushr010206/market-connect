@@ -1,0 +1,171 @@
+Build a complete, scalable, full-stack web application called "SupplyLink: Local Supply Chain Matchmaker". The application connects Local Producers/Wholesalers with Retailers (bulk buyers) and Individual End Customers, cutting out middlemen to optimize local supply chains.
+
+---
+
+### 1. TECHNICAL STACK & ARCHITECTURE
+
+- Frontend: React (Vite), Tailwind CSS, Lucide React (Icons), Framer Motion (Animations), Recharts (Analytics Dashboard).
+- Backend: Node.js with Express.js REST API.
+- Authentication: JWT (JSON Web Tokens) with bcryptjs password hashing and role-based middleware protection.
+- Database: SQLite with Prisma ORM (structured cleanly so it can easily migrate to PostgreSQL).
+- Real-time Features: Socket.IO (or Server-Sent Events) for live chat notifications and real-time order status updates.
+- Styling / Theme: Modern Eco-Industrial aesthetic. Deep Slate (`#0F172A`), Emerald Green (`#059669`), Amber (`#F59E0B`), and Light Off-White (`#F8FAFC`). Glassmorphism cards, micro-interactions, clean badge indicators, and high-contrast call-to-action elements.
+
+---
+
+### 2. DATABASE SCHEMA (Prisma Model Requirements)
+
+Define the following Prisma schema models:
+
+1. User:
+   - `id` (String, Primary Key, UUID)
+   - `name` (String)
+   - `email` (String, Unique)
+   - `password` (String, Hashed)
+   - `role` (Enum: `PRODUCER`, `RETAILER`, `CUSTOMER`)
+   - `phone` (String, Optional)
+   - `address` (String)
+   - `city` (String)
+   - `latitude` (Float, Default: 12.9716)
+   - `longitude` (Float, Default: 77.5946)
+   - `createdAt` (DateTime)
+
+2. ProducerProfile:
+   - `id` (String, PK)
+   - `userId` (String, Unique, FK -> User)
+   - `businessName` (String)
+   - `certifications` (String) // e.g., "Organic Certified, ISO 9001"
+   - `minOrderValue` (Float, Default: 0)
+   - `rating` (Float, Default: 4.8)
+
+3. Product:
+   - `id` (String, PK)
+   - `producerId` (String, FK -> User)
+   - `title` (String)
+   - `description` (String)
+   - `category` (String) // e.g., Produce, Dairy, Grains, Spices, Packaging
+   - `unit` (String) // e.g., kg, box, liter, crate
+   - `retailPrice` (Float)
+   - `wholesalePrice` (Float)
+   - `moq` (Int, Minimum Order Quantity for wholesale)
+   - `stockQuantity` (Int)
+   - `imageUrl` (String)
+   - `isOrganic` (Boolean, Default: false)
+   - `createdAt` (DateTime)
+
+4. Order:
+   - `id` (String, PK)
+   - `buyerId` (String, FK -> User)
+   - `sellerId` (String, FK -> User)
+   - `totalAmount` (Float)
+   - `orderType` (Enum: `WHOLESALE`, `RETAIL`)
+   - `status` (Enum: `PENDING`, `ACCEPTED`, `PROCESSING`, `DISPATCHED`, `DELIVERED`, `CANCELLED`)
+   - `deliveryAddress` (String)
+   - `createdAt` (DateTime)
+
+5. OrderItem:
+   - `id` (String, PK)
+   - `orderId` (String, FK -> Order)
+   - `productId` (String, FK -> Product)
+   - `quantity` (Int)
+   - `unitPrice` (Float)
+
+6. Message:
+   - `id` (String, PK)
+   - `senderId` (String, FK -> User)
+   - `receiverId` (String, FK -> User)
+   - `productId` (String, Optional, FK -> Product)
+   - `content` (String)
+   - `quoteAmount` (Float, Optional) // Allows sending price negotiation quotes
+   - `timestamp` (DateTime)
+
+---
+
+### 3. AUTHENTICATION & API ENDPOINTS
+
+Build secure Auth controllers in `server/routes/auth.js`:
+- `POST /api/auth/register`: Hashes password, saves user & profile, generates JWT token.
+- `POST /api/auth/login`: Validates credentials, returns JWT token + user profile payload.
+- `GET /api/auth/me`: Decodes JWT header `Authorization: Bearer <token>` and returns current logged-in user profile.
+
+Build Protected API Controllers:
+- Products:
+  - `GET /api/products`: Filter by category, distance range, search query, and buyer type (wholesale/retail).
+  - `POST /api/products`: (Producer only) Add new product listing.
+  - `PUT /api/products/:id`: (Producer only) Update price, stock levels, or details.
+  - `DELETE /api/products/:id`: (Producer only) Remove listing.
+- Orders:
+  - `POST /api/orders`: Create new order. Uses database transaction to verify stock before confirming.
+  - `GET /api/orders`: Fetch user orders (buyers see placed orders, producers see incoming orders).
+  - `PATCH /api/orders/:id/status`: (Producer only) Update pipeline status (`ACCEPTED`, `DISPATCHED`, etc.).
+- Messages:
+  - `GET /api/messages/:userId`: Fetch conversation history between logged-in user and recipient.
+  - `POST /api/messages`: Send message or formal quote proposal.
+
+---
+
+### 4. FRONTEND PAGES & UI COMPONENTS
+
+1. Authentication Page (`/login` & `/register`):
+   - Toggleable tabs for Sign In vs Create Account.
+   - Registration form includes interactive role selection tiles with icons:
+     * [ 🌾 Producer / Wholesaler ]
+     * [ 🏪 Retailer / Store Owner ]
+     * [ 🛒 Individual Customer ]
+   - "One-Click Quick Login" Banner at the top for instant testing:
+     * "Login as Sample Producer (GreenValley Farms)"
+     * "Login as Sample Retailer (FreshMart Grocery)"
+     * "Login as Sample Customer (Sarah Jenkins)"
+
+2. Navigation Bar:
+   - Contextual Links based on logged-in user role.
+   - User profile dropdown with role badge indicator (e.g., green badge for Producer, blue for Retailer).
+   - Shopping cart drawer icon with item count badge.
+   - Real-time notification bell for chat messages and order updates.
+
+3. Producer Dashboard (`/dashboard/producer`):
+   - Metric Cards: Total Revenue ($), Active Orders, Pending Inquiries, Low Stock Alerts.
+   - Sales Analytics Bar Chart built with Recharts.
+   - Product Management Table: In-place stock editor, toggle active state, "Add New Product" modal form.
+   - Incoming Orders Pipeline Kanban/List with quick status update buttons ("Accept Order", "Dispatch", "Mark Delivered").
+
+4. Marketplace & Search Page (`/marketplace`):
+   - Dual Mode Toggle: [ Wholesale Purchasing Mode ] vs [ Direct Retail Mode ].
+   - Filters Sidebar: Search bar, Category selector, Maximum Distance Slider (5 km to 100 km), Organic certified toggle.
+   - Interactive Product Cards: High-res images, supplier name with "Verified Local Producer" badge, location distance indicator (e.g., "3.2 km away"), stock progress bar, dual price display (Wholesale rate with MOQ vs Retail price), and "Quick Add to Cart" / "Negotiate Price" buttons.
+
+5. Direct Messaging & Quote Negotiation Modal (`/messages`):
+   - Left side: Active chat threads with recent suppliers/buyers.
+   - Right side: Chat stream supporting text messages and structured "Custom Price Quote" widgets with an "Accept Quote & Place Order" action button inside the chat interface.
+
+6. Shopping Cart & Order Checkout (`/checkout`):
+   - Summary of items, dynamic MOQ compliance checker (warns retailers if quantity is below producer's wholesale minimum), delivery address confirmation, mock payment selector, and order placement trigger.
+
+7. Order History & Live Tracking (`/orders`):
+   - List of active and past orders with interactive step progress indicators: `Order Placed` -> `Accepted by Producer` -> `Processing` -> `Out for Delivery` -> `Delivered`.
+
+---
+
+### 5. INITIAL SEED DATA REQUIREMENTS
+
+Automatically seed the database on server startup with complete, realistic test data:
+1. Users & Profiles:
+   - Producer 1: `producer@farm.com` / `password123` -> GreenValley Farms (Fresh Produce & Fruits)
+   - Producer 2: `artisan@dairy.com` / `password123` -> Pure Pastures Dairy (Milk, Cheese, Butter)
+   - Retailer 1: `retailer@freshmart.com` / `password123` -> FreshMart Local Supermarket
+   - Customer 1: `customer@gmail.com` / `password123` -> Alex Johnson
+2. Products (At least 6 listings with realistic Unsplash photo URLs):
+   - Organic Apples (Fresh Produce)
+   - Farm Fresh Whole Milk (Dairy)
+   - Premium Cold-Pressed Olive Oil (Spices/Oil)
+   - Whole Grain Wheat (Grains)
+3. Sample Chat History:
+   - Pre-populated negotiation thread between FreshMart Supermarket and GreenValley Farms discussing a 200kg bulk apple order.
+
+---
+
+### 6. EXECUTION & SETUP INSTRUCTIONS
+
+1. Structure the project into a clean full-stack setup (e.g., Express server running API routes on `/api`, Vite serving the React frontend on the client side).
+2. Set up Prisma SQLite database migrations automatically on startup (`npx prisma db push` / seed script).
+3. Ensure smooth build execution via `npm run dev` so the application runs instantly without any missing package errors.

@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "SupplyLink"
+description = "A local supply-chain marketplace that connects producers with retailers and individual customers through searchable listings, direct orders, and price negotiation."
+version = "1.0.0"
+id = "artifacts/supplylink"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19352
+
+[services.development]
+run = "pnpm --filter @workspace/supplylink run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/supplylink", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/supplylink/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19352"
+BASE_PATH = "/"

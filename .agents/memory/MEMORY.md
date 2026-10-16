@@ -1,0 +1,1 @@
+- [Generated API codegen quirks](api-codegen-quirks.md) — keep OpenAPI component names distinct from operation-derived names, and include DOM.Iterable when generated fetch code uses Headers.entries.
