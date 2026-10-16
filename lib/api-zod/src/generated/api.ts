@@ -35,7 +35,7 @@ export const LoginResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "email": zod.string(),
-  "role": zod.enum(['PRODUCER', 'RETAILER', 'CUSTOMER']),
+  "role": zod.enum(['PRODUCER', 'RETAILER', 'CUSTOMER', 'ADMIN']),
   "phone": zod.string().nullish(),
   "address": zod.string(),
   "city": zod.string(),
@@ -78,7 +78,7 @@ export const RegisterResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "email": zod.string(),
-  "role": zod.enum(['PRODUCER', 'RETAILER', 'CUSTOMER']),
+  "role": zod.enum(['PRODUCER', 'RETAILER', 'CUSTOMER', 'ADMIN']),
   "phone": zod.string().nullish(),
   "address": zod.string(),
   "city": zod.string(),
@@ -97,7 +97,7 @@ export const GetMeResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "email": zod.string(),
-  "role": zod.enum(['PRODUCER', 'RETAILER', 'CUSTOMER']),
+  "role": zod.enum(['PRODUCER', 'RETAILER', 'CUSTOMER', 'ADMIN']),
   "phone": zod.string().nullish(),
   "address": zod.string(),
   "city": zod.string(),
@@ -118,6 +118,11 @@ export const GetProductsQueryParams = zod.object({
   "organic": zod.coerce.boolean().optional()
 })
 
+export const getProductsResponseCurrencyMin = 3;
+export const getProductsResponseCurrencyMax = 3;
+
+
+
 export const GetProductsResponseItem = zod.object({
   "id": zod.string(),
   "producerId": zod.string(),
@@ -135,6 +140,19 @@ export const GetProductsResponseItem = zod.object({
   "imageUrl": zod.string(),
   "isOrganic": zod.boolean(),
   "isActive": zod.boolean(),
+  "catalogProductId": zod.string().nullable(),
+  "varietyId": zod.string().nullable(),
+  "varietyName": zod.string().nullable(),
+  "mainCategory": zod.string().nullish(),
+  "subcategory": zod.string().nullish(),
+  "currency": zod.string().min(getProductsResponseCurrencyMin).max(getProductsResponseCurrencyMax),
+  "maxOrderQuantity": zod.number().int().nullable(),
+  "qualityGrade": zod.string().nullable(),
+  "harvestDate": zod.coerce.date().nullable(),
+  "availableFrom": zod.coerce.date().nullable(),
+  "deliveryAreas": zod.array(zod.string()),
+  "deliveryFee": zod.number(),
+  "isSample": zod.boolean(),
   "createdAt": zod.coerce.date()
 })
 export const GetProductsResponse = zod.array(GetProductsResponseItem)
@@ -152,6 +170,14 @@ export const createProductBodyWholesalePriceMin = 0;
 
 export const createProductBodyStockQuantityMin = 0;
 
+export const createProductBodyCurrencyDefault = `INR`;
+export const createProductBodyCurrencyMin = 3;
+export const createProductBodyCurrencyMax = 3;
+
+
+export const createProductBodyDeliveryFeeDefault = 0;
+export const createProductBodyDeliveryFeeMin = 0;
+
 
 
 export const CreateProductBody = zod.object({
@@ -165,8 +191,22 @@ export const CreateProductBody = zod.object({
   "stockQuantity": zod.number().int().min(createProductBodyStockQuantityMin),
   "imageUrl": zod.string(),
   "isOrganic": zod.boolean(),
-  "isActive": zod.boolean().optional()
+  "isActive": zod.boolean().optional(),
+  "catalogProductId": zod.string().uuid(),
+  "varietyId": zod.string().uuid().nullish(),
+  "currency": zod.string().min(createProductBodyCurrencyMin).max(createProductBodyCurrencyMax).default(createProductBodyCurrencyDefault),
+  "maxOrderQuantity": zod.number().int().min(1).nullish(),
+  "qualityGrade": zod.string().nullish(),
+  "harvestDate": zod.coerce.date().nullish(),
+  "availableFrom": zod.coerce.date().nullish(),
+  "deliveryAreas": zod.array(zod.string()).optional(),
+  "deliveryFee": zod.number().min(createProductBodyDeliveryFeeMin).default(createProductBodyDeliveryFeeDefault)
 })
+
+export const createProductResponseCurrencyMin = 3;
+export const createProductResponseCurrencyMax = 3;
+
+
 
 export const CreateProductResponse = zod.object({
   "id": zod.string(),
@@ -185,6 +225,19 @@ export const CreateProductResponse = zod.object({
   "imageUrl": zod.string(),
   "isOrganic": zod.boolean(),
   "isActive": zod.boolean(),
+  "catalogProductId": zod.string().nullable(),
+  "varietyId": zod.string().nullable(),
+  "varietyName": zod.string().nullable(),
+  "mainCategory": zod.string().nullish(),
+  "subcategory": zod.string().nullish(),
+  "currency": zod.string().min(createProductResponseCurrencyMin).max(createProductResponseCurrencyMax),
+  "maxOrderQuantity": zod.number().int().nullable(),
+  "qualityGrade": zod.string().nullable(),
+  "harvestDate": zod.coerce.date().nullable(),
+  "availableFrom": zod.coerce.date().nullable(),
+  "deliveryAreas": zod.array(zod.string()),
+  "deliveryFee": zod.number(),
+  "isSample": zod.boolean(),
   "createdAt": zod.coerce.date()
 })
 
@@ -204,14 +257,32 @@ export const updateProductBodyStockQuantityMin = 0;
 
 
 
+export const updateProductBodyDeliveryFeeMin = 0;
+
+
+
 export const UpdateProductBody = zod.object({
   "title": zod.string().optional(),
   "description": zod.string().optional(),
   "retailPrice": zod.number().min(updateProductBodyRetailPriceMin).optional(),
   "wholesalePrice": zod.number().min(updateProductBodyWholesalePriceMin).optional(),
   "stockQuantity": zod.number().int().min(updateProductBodyStockQuantityMin).optional(),
-  "isActive": zod.boolean().optional()
+  "isActive": zod.boolean().optional(),
+  "varietyId": zod.string().uuid().nullish(),
+  "unit": zod.string().optional(),
+  "moq": zod.number().int().min(1).optional(),
+  "maxOrderQuantity": zod.number().int().min(1).nullish(),
+  "qualityGrade": zod.string().nullish(),
+  "harvestDate": zod.coerce.date().nullish(),
+  "availableFrom": zod.coerce.date().nullish(),
+  "deliveryAreas": zod.array(zod.string()).optional(),
+  "deliveryFee": zod.number().min(updateProductBodyDeliveryFeeMin).optional()
 })
+
+export const updateProductResponseCurrencyMin = 3;
+export const updateProductResponseCurrencyMax = 3;
+
+
 
 export const UpdateProductResponse = zod.object({
   "id": zod.string(),
@@ -230,6 +301,19 @@ export const UpdateProductResponse = zod.object({
   "imageUrl": zod.string(),
   "isOrganic": zod.boolean(),
   "isActive": zod.boolean(),
+  "catalogProductId": zod.string().nullable(),
+  "varietyId": zod.string().nullable(),
+  "varietyName": zod.string().nullable(),
+  "mainCategory": zod.string().nullish(),
+  "subcategory": zod.string().nullish(),
+  "currency": zod.string().min(updateProductResponseCurrencyMin).max(updateProductResponseCurrencyMax),
+  "maxOrderQuantity": zod.number().int().nullable(),
+  "qualityGrade": zod.string().nullable(),
+  "harvestDate": zod.coerce.date().nullable(),
+  "availableFrom": zod.coerce.date().nullable(),
+  "deliveryAreas": zod.array(zod.string()),
+  "deliveryFee": zod.number(),
+  "isSample": zod.boolean(),
   "createdAt": zod.coerce.date()
 })
 
@@ -245,6 +329,573 @@ export const DeleteProductResponse = zod.void()
 
 
 /**
+ * @summary List active catalogue categories
+ */
+export const ListCatalogCategoriesResponseItem = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "parentId": zod.string().uuid().nullable(),
+  "parentSlug": zod.string().nullable(),
+  "description": zod.string().nullable(),
+  "sortOrder": zod.number().int(),
+  "isActive": zod.boolean(),
+  "productCount": zod.number().int()
+})
+export const ListCatalogCategoriesResponse = zod.array(ListCatalogCategoriesResponseItem)
+
+
+/**
+ * @summary Search the canonical product catalogue
+ */
+export const listCatalogProductsQueryPageDefault = 1;
+
+export const listCatalogProductsQueryPageSizeDefault = 24;
+export const listCatalogProductsQueryPageSizeMax = 50;
+
+
+
+export const ListCatalogProductsQueryParams = zod.object({
+  "search": zod.coerce.string().optional(),
+  "categorySlug": zod.coerce.string().optional(),
+  "subcategorySlug": zod.coerce.string().optional(),
+  "varietySlug": zod.coerce.string().optional(),
+  "productForm": zod.coerce.string().optional(),
+  "page": zod.coerce.number().int().min(1).default(listCatalogProductsQueryPageDefault),
+  "pageSize": zod.coerce.number().int().min(1).max(listCatalogProductsQueryPageSizeMax).default(listCatalogProductsQueryPageSizeDefault)
+})
+
+export const ListCatalogProductsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "categoryId": zod.string().uuid(),
+  "categoryName": zod.string(),
+  "categorySlug": zod.string(),
+  "subcategoryId": zod.string().uuid().nullable(),
+  "subcategoryName": zod.string().nullable(),
+  "subcategorySlug": zod.string().nullable(),
+  "description": zod.string(),
+  "scientificName": zod.string().nullable(),
+  "defaultUnit": zod.string(),
+  "imageUrl": zod.string().nullable(),
+  "productForm": zod.string().nullable(),
+  "seasonalAvailability": zod.string().nullable(),
+  "storageInfo": zod.string().nullable(),
+  "isActive": zod.boolean(),
+  "varietyCount": zod.number().int(),
+  "activeListingCount": zod.number().int()
+})),
+  "page": zod.number().int(),
+  "pageSize": zod.number().int(),
+  "total": zod.number().int(),
+  "totalPages": zod.number().int()
+})
+
+
+/**
+ * @summary Get a canonical product with varieties and active supplier offers
+ */
+export const GetCatalogProductParams = zod.object({
+  "slug": zod.coerce.string()
+})
+
+export const getCatalogProductResponseTwoOffersItemCurrencyMin = 3;
+export const getCatalogProductResponseTwoOffersItemCurrencyMax = 3;
+
+
+
+export const GetCatalogProductResponse = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "categoryId": zod.string().uuid(),
+  "categoryName": zod.string(),
+  "categorySlug": zod.string(),
+  "subcategoryId": zod.string().uuid().nullable(),
+  "subcategoryName": zod.string().nullable(),
+  "subcategorySlug": zod.string().nullable(),
+  "description": zod.string(),
+  "scientificName": zod.string().nullable(),
+  "defaultUnit": zod.string(),
+  "imageUrl": zod.string().nullable(),
+  "productForm": zod.string().nullable(),
+  "seasonalAvailability": zod.string().nullable(),
+  "storageInfo": zod.string().nullable(),
+  "isActive": zod.boolean(),
+  "varietyCount": zod.number().int(),
+  "activeListingCount": zod.number().int()
+}).and(zod.object({
+  "varieties": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "region": zod.string().nullable(),
+  "attributes": zod.record(zod.string(), zod.unknown()),
+  "isActive": zod.boolean()
+})),
+  "aliases": zod.array(zod.string()),
+  "offers": zod.array(zod.object({
+  "id": zod.string(),
+  "producerId": zod.string(),
+  "producerName": zod.string(),
+  "producerCity": zod.string(),
+  "producerRating": zod.number(),
+  "title": zod.string(),
+  "description": zod.string(),
+  "category": zod.string(),
+  "unit": zod.string(),
+  "retailPrice": zod.number(),
+  "wholesalePrice": zod.number(),
+  "moq": zod.number().int(),
+  "stockQuantity": zod.number().int(),
+  "imageUrl": zod.string(),
+  "isOrganic": zod.boolean(),
+  "isActive": zod.boolean(),
+  "catalogProductId": zod.string().nullable(),
+  "varietyId": zod.string().nullable(),
+  "varietyName": zod.string().nullable(),
+  "mainCategory": zod.string().nullish(),
+  "subcategory": zod.string().nullish(),
+  "currency": zod.string().min(getCatalogProductResponseTwoOffersItemCurrencyMin).max(getCatalogProductResponseTwoOffersItemCurrencyMax),
+  "maxOrderQuantity": zod.number().int().nullable(),
+  "qualityGrade": zod.string().nullable(),
+  "harvestDate": zod.coerce.date().nullable(),
+  "availableFrom": zod.coerce.date().nullable(),
+  "deliveryAreas": zod.array(zod.string()),
+  "deliveryFee": zod.number(),
+  "isSample": zod.boolean(),
+  "createdAt": zod.coerce.date()
+}))
+}))
+
+
+/**
+ * @summary Suggest a missing catalogue product for administrator review
+ */
+export const submitCatalogSuggestionBodyNameMin = 2;
+export const submitCatalogSuggestionBodyNameMax = 120;
+
+export const submitCatalogSuggestionBodyVarietyNameMax = 120;
+
+export const submitCatalogSuggestionBodyDescriptionMax = 1000;
+
+
+
+export const SubmitCatalogSuggestionBody = zod.object({
+  "name": zod.string().min(submitCatalogSuggestionBodyNameMin).max(submitCatalogSuggestionBodyNameMax),
+  "categoryId": zod.string().uuid().nullish(),
+  "varietyName": zod.string().max(submitCatalogSuggestionBodyVarietyNameMax).nullish(),
+  "description": zod.string().max(submitCatalogSuggestionBodyDescriptionMax)
+})
+
+export const SubmitCatalogSuggestionResponse = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "normalizedName": zod.string(),
+  "categoryId": zod.string().uuid().nullable(),
+  "categoryName": zod.string().nullable(),
+  "varietyName": zod.string().nullable(),
+  "description": zod.string(),
+  "status": zod.enum(['PENDING', 'APPROVED', 'REJECTED']),
+  "submittedBy": zod.string().uuid(),
+  "submitterName": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary List all categories for catalogue administration
+ */
+export const ListAdminCatalogCategoriesResponseItem = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "parentId": zod.string().uuid().nullable(),
+  "parentSlug": zod.string().nullable(),
+  "description": zod.string().nullable(),
+  "sortOrder": zod.number().int(),
+  "isActive": zod.boolean(),
+  "productCount": zod.number().int()
+})
+export const ListAdminCatalogCategoriesResponse = zod.array(ListAdminCatalogCategoriesResponseItem)
+
+
+/**
+ * @summary Create a category or subcategory
+ */
+export const createCatalogCategoryBodyNameMin = 2;
+export const createCatalogCategoryBodyNameMax = 80;
+
+export const createCatalogCategoryBodySlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const createCatalogCategoryBodySortOrderDefault = 0;
+export const createCatalogCategoryBodySortOrderMin = 0;
+
+
+
+export const CreateCatalogCategoryBody = zod.object({
+  "name": zod.string().min(createCatalogCategoryBodyNameMin).max(createCatalogCategoryBodyNameMax),
+  "slug": zod.string().regex(createCatalogCategoryBodySlugRegExp),
+  "parentId": zod.string().uuid().nullish(),
+  "description": zod.string().nullish(),
+  "sortOrder": zod.number().int().min(createCatalogCategoryBodySortOrderMin).default(createCatalogCategoryBodySortOrderDefault)
+})
+
+export const CreateCatalogCategoryResponse = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "parentId": zod.string().uuid().nullable(),
+  "parentSlug": zod.string().nullable(),
+  "description": zod.string().nullable(),
+  "sortOrder": zod.number().int(),
+  "isActive": zod.boolean(),
+  "productCount": zod.number().int()
+})
+
+
+/**
+ * @summary Rename, reorganize, or archive a category
+ */
+export const UpdateCatalogCategoryParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const updateCatalogCategoryBodyNameMin = 2;
+export const updateCatalogCategoryBodyNameMax = 80;
+
+export const updateCatalogCategoryBodySlugRegExp = new RegExp('^[a-z0-9]+(?:-[a-z0-9]+)*$');
+export const updateCatalogCategoryBodySortOrderMin = 0;
+
+
+
+export const UpdateCatalogCategoryBody = zod.object({
+  "name": zod.string().min(updateCatalogCategoryBodyNameMin).max(updateCatalogCategoryBodyNameMax).optional(),
+  "slug": zod.string().regex(updateCatalogCategoryBodySlugRegExp).optional(),
+  "parentId": zod.string().uuid().nullish(),
+  "description": zod.string().nullish(),
+  "sortOrder": zod.number().int().min(updateCatalogCategoryBodySortOrderMin).optional(),
+  "isActive": zod.boolean().optional()
+})
+
+export const UpdateCatalogCategoryResponse = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "parentId": zod.string().uuid().nullable(),
+  "parentSlug": zod.string().nullable(),
+  "description": zod.string().nullable(),
+  "sortOrder": zod.number().int(),
+  "isActive": zod.boolean(),
+  "productCount": zod.number().int()
+})
+
+
+/**
+ * @summary List all catalogue products for administration
+ */
+export const listAdminCatalogProductsQueryPageDefault = 1;
+
+export const listAdminCatalogProductsQueryPageSizeDefault = 24;
+export const listAdminCatalogProductsQueryPageSizeMax = 50;
+
+
+
+export const ListAdminCatalogProductsQueryParams = zod.object({
+  "search": zod.coerce.string().optional(),
+  "page": zod.coerce.number().int().min(1).default(listAdminCatalogProductsQueryPageDefault),
+  "pageSize": zod.coerce.number().int().min(1).max(listAdminCatalogProductsQueryPageSizeMax).default(listAdminCatalogProductsQueryPageSizeDefault)
+})
+
+export const ListAdminCatalogProductsResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "categoryId": zod.string().uuid(),
+  "categoryName": zod.string(),
+  "categorySlug": zod.string(),
+  "subcategoryId": zod.string().uuid().nullable(),
+  "subcategoryName": zod.string().nullable(),
+  "subcategorySlug": zod.string().nullable(),
+  "description": zod.string(),
+  "scientificName": zod.string().nullable(),
+  "defaultUnit": zod.string(),
+  "imageUrl": zod.string().nullable(),
+  "productForm": zod.string().nullable(),
+  "seasonalAvailability": zod.string().nullable(),
+  "storageInfo": zod.string().nullable(),
+  "isActive": zod.boolean(),
+  "varietyCount": zod.number().int(),
+  "activeListingCount": zod.number().int()
+})),
+  "page": zod.number().int(),
+  "pageSize": zod.number().int(),
+  "total": zod.number().int(),
+  "totalPages": zod.number().int()
+})
+
+
+/**
+ * @summary Add an approved canonical product and its varieties
+ */
+export const createCatalogProductBodyNameMin = 2;
+export const createCatalogProductBodyNameMax = 120;
+
+export const createCatalogProductBodyVarietiesItemNameMin = 2;
+export const createCatalogProductBodyVarietiesItemNameMax = 100;
+
+export const createCatalogProductBodyVarietiesItemRegionMax = 100;
+
+
+
+export const CreateCatalogProductBody = zod.object({
+  "name": zod.string().min(createCatalogProductBodyNameMin).max(createCatalogProductBodyNameMax),
+  "categoryId": zod.string().uuid(),
+  "description": zod.string().optional(),
+  "scientificName": zod.string().nullish(),
+  "defaultUnit": zod.string(),
+  "imageUrl": zod.string().nullish(),
+  "productForm": zod.string().nullish(),
+  "seasonalAvailability": zod.string().nullish(),
+  "storageInfo": zod.string().nullish(),
+  "aliases": zod.array(zod.string()).optional(),
+  "varieties": zod.array(zod.object({
+  "name": zod.string().min(createCatalogProductBodyVarietiesItemNameMin).max(createCatalogProductBodyVarietiesItemNameMax),
+  "region": zod.string().max(createCatalogProductBodyVarietiesItemRegionMax).nullish(),
+  "attributes": zod.record(zod.string(), zod.unknown()).optional()
+})).optional()
+})
+
+export const createCatalogProductResponseTwoOffersItemCurrencyMin = 3;
+export const createCatalogProductResponseTwoOffersItemCurrencyMax = 3;
+
+
+
+export const CreateCatalogProductResponse = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "categoryId": zod.string().uuid(),
+  "categoryName": zod.string(),
+  "categorySlug": zod.string(),
+  "subcategoryId": zod.string().uuid().nullable(),
+  "subcategoryName": zod.string().nullable(),
+  "subcategorySlug": zod.string().nullable(),
+  "description": zod.string(),
+  "scientificName": zod.string().nullable(),
+  "defaultUnit": zod.string(),
+  "imageUrl": zod.string().nullable(),
+  "productForm": zod.string().nullable(),
+  "seasonalAvailability": zod.string().nullable(),
+  "storageInfo": zod.string().nullable(),
+  "isActive": zod.boolean(),
+  "varietyCount": zod.number().int(),
+  "activeListingCount": zod.number().int()
+}).and(zod.object({
+  "varieties": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "region": zod.string().nullable(),
+  "attributes": zod.record(zod.string(), zod.unknown()),
+  "isActive": zod.boolean()
+})),
+  "aliases": zod.array(zod.string()),
+  "offers": zod.array(zod.object({
+  "id": zod.string(),
+  "producerId": zod.string(),
+  "producerName": zod.string(),
+  "producerCity": zod.string(),
+  "producerRating": zod.number(),
+  "title": zod.string(),
+  "description": zod.string(),
+  "category": zod.string(),
+  "unit": zod.string(),
+  "retailPrice": zod.number(),
+  "wholesalePrice": zod.number(),
+  "moq": zod.number().int(),
+  "stockQuantity": zod.number().int(),
+  "imageUrl": zod.string(),
+  "isOrganic": zod.boolean(),
+  "isActive": zod.boolean(),
+  "catalogProductId": zod.string().nullable(),
+  "varietyId": zod.string().nullable(),
+  "varietyName": zod.string().nullable(),
+  "mainCategory": zod.string().nullish(),
+  "subcategory": zod.string().nullish(),
+  "currency": zod.string().min(createCatalogProductResponseTwoOffersItemCurrencyMin).max(createCatalogProductResponseTwoOffersItemCurrencyMax),
+  "maxOrderQuantity": zod.number().int().nullable(),
+  "qualityGrade": zod.string().nullable(),
+  "harvestDate": zod.coerce.date().nullable(),
+  "availableFrom": zod.coerce.date().nullable(),
+  "deliveryAreas": zod.array(zod.string()),
+  "deliveryFee": zod.number(),
+  "isSample": zod.boolean(),
+  "createdAt": zod.coerce.date()
+}))
+}))
+
+
+/**
+ * @summary Edit or archive a canonical product
+ */
+export const UpdateCatalogProductParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const updateCatalogProductBodyNameMin = 2;
+export const updateCatalogProductBodyNameMax = 120;
+
+export const updateCatalogProductBodyVarietiesItemNameMin = 2;
+export const updateCatalogProductBodyVarietiesItemNameMax = 100;
+
+export const updateCatalogProductBodyVarietiesItemRegionMax = 100;
+
+
+
+export const UpdateCatalogProductBody = zod.object({
+  "name": zod.string().min(updateCatalogProductBodyNameMin).max(updateCatalogProductBodyNameMax).optional(),
+  "categoryId": zod.string().uuid().optional(),
+  "description": zod.string().optional(),
+  "scientificName": zod.string().nullish(),
+  "defaultUnit": zod.string().optional(),
+  "imageUrl": zod.string().nullish(),
+  "productForm": zod.string().nullish(),
+  "seasonalAvailability": zod.string().nullish(),
+  "storageInfo": zod.string().nullish(),
+  "isActive": zod.boolean().optional(),
+  "aliases": zod.array(zod.string()).optional(),
+  "varieties": zod.array(zod.object({
+  "name": zod.string().min(updateCatalogProductBodyVarietiesItemNameMin).max(updateCatalogProductBodyVarietiesItemNameMax),
+  "region": zod.string().max(updateCatalogProductBodyVarietiesItemRegionMax).nullish(),
+  "attributes": zod.record(zod.string(), zod.unknown()).optional()
+})).optional()
+})
+
+export const updateCatalogProductResponseTwoOffersItemCurrencyMin = 3;
+export const updateCatalogProductResponseTwoOffersItemCurrencyMax = 3;
+
+
+
+export const UpdateCatalogProductResponse = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "categoryId": zod.string().uuid(),
+  "categoryName": zod.string(),
+  "categorySlug": zod.string(),
+  "subcategoryId": zod.string().uuid().nullable(),
+  "subcategoryName": zod.string().nullable(),
+  "subcategorySlug": zod.string().nullable(),
+  "description": zod.string(),
+  "scientificName": zod.string().nullable(),
+  "defaultUnit": zod.string(),
+  "imageUrl": zod.string().nullable(),
+  "productForm": zod.string().nullable(),
+  "seasonalAvailability": zod.string().nullable(),
+  "storageInfo": zod.string().nullable(),
+  "isActive": zod.boolean(),
+  "varietyCount": zod.number().int(),
+  "activeListingCount": zod.number().int()
+}).and(zod.object({
+  "varieties": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "slug": zod.string(),
+  "region": zod.string().nullable(),
+  "attributes": zod.record(zod.string(), zod.unknown()),
+  "isActive": zod.boolean()
+})),
+  "aliases": zod.array(zod.string()),
+  "offers": zod.array(zod.object({
+  "id": zod.string(),
+  "producerId": zod.string(),
+  "producerName": zod.string(),
+  "producerCity": zod.string(),
+  "producerRating": zod.number(),
+  "title": zod.string(),
+  "description": zod.string(),
+  "category": zod.string(),
+  "unit": zod.string(),
+  "retailPrice": zod.number(),
+  "wholesalePrice": zod.number(),
+  "moq": zod.number().int(),
+  "stockQuantity": zod.number().int(),
+  "imageUrl": zod.string(),
+  "isOrganic": zod.boolean(),
+  "isActive": zod.boolean(),
+  "catalogProductId": zod.string().nullable(),
+  "varietyId": zod.string().nullable(),
+  "varietyName": zod.string().nullable(),
+  "mainCategory": zod.string().nullish(),
+  "subcategory": zod.string().nullish(),
+  "currency": zod.string().min(updateCatalogProductResponseTwoOffersItemCurrencyMin).max(updateCatalogProductResponseTwoOffersItemCurrencyMax),
+  "maxOrderQuantity": zod.number().int().nullable(),
+  "qualityGrade": zod.string().nullable(),
+  "harvestDate": zod.coerce.date().nullable(),
+  "availableFrom": zod.coerce.date().nullable(),
+  "deliveryAreas": zod.array(zod.string()),
+  "deliveryFee": zod.number(),
+  "isSample": zod.boolean(),
+  "createdAt": zod.coerce.date()
+}))
+}))
+
+
+/**
+ * @summary Review pending product suggestions
+ */
+export const listCatalogSuggestionsQueryStatusDefault = `PENDING`;
+
+export const ListCatalogSuggestionsQueryParams = zod.object({
+  "status": zod.enum(['PENDING', 'APPROVED', 'REJECTED']).default(listCatalogSuggestionsQueryStatusDefault)
+})
+
+export const ListCatalogSuggestionsResponseItem = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "normalizedName": zod.string(),
+  "categoryId": zod.string().uuid().nullable(),
+  "categoryName": zod.string().nullable(),
+  "varietyName": zod.string().nullable(),
+  "description": zod.string(),
+  "status": zod.enum(['PENDING', 'APPROVED', 'REJECTED']),
+  "submittedBy": zod.string().uuid(),
+  "submitterName": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListCatalogSuggestionsResponse = zod.array(ListCatalogSuggestionsResponseItem)
+
+
+/**
+ * @summary Approve or reject a product suggestion
+ */
+export const ReviewCatalogSuggestionParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const ReviewCatalogSuggestionBody = zod.object({
+  "status": zod.enum(['APPROVED', 'REJECTED'])
+})
+
+export const ReviewCatalogSuggestionResponse = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "normalizedName": zod.string(),
+  "categoryId": zod.string().uuid().nullable(),
+  "categoryName": zod.string().nullable(),
+  "varietyName": zod.string().nullable(),
+  "description": zod.string(),
+  "status": zod.enum(['PENDING', 'APPROVED', 'REJECTED']),
+  "submittedBy": zod.string().uuid(),
+  "submitterName": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
  * @summary List orders for the current user
  */
 export const GetOrdersResponseItem = zod.object({
@@ -254,6 +905,7 @@ export const GetOrdersResponseItem = zod.object({
   "sellerId": zod.string(),
   "sellerName": zod.string(),
   "totalAmount": zod.number(),
+  "currency": zod.string(),
   "orderType": zod.enum(['WHOLESALE', 'RETAIL']),
   "status": zod.enum(['PENDING', 'ACCEPTED', 'PROCESSING', 'DISPATCHED', 'DELIVERED', 'CANCELLED']),
   "deliveryAddress": zod.string(),
@@ -296,6 +948,7 @@ export const CreateOrderResponseItem = zod.object({
   "sellerId": zod.string(),
   "sellerName": zod.string(),
   "totalAmount": zod.number(),
+  "currency": zod.string(),
   "orderType": zod.enum(['WHOLESALE', 'RETAIL']),
   "status": zod.enum(['PENDING', 'ACCEPTED', 'PROCESSING', 'DISPATCHED', 'DELIVERED', 'CANCELLED']),
   "deliveryAddress": zod.string(),
@@ -331,6 +984,7 @@ export const UpdateOrderStatusResponse = zod.object({
   "sellerId": zod.string(),
   "sellerName": zod.string(),
   "totalAmount": zod.number(),
+  "currency": zod.string(),
   "orderType": zod.enum(['WHOLESALE', 'RETAIL']),
   "status": zod.enum(['PENDING', 'ACCEPTED', 'PROCESSING', 'DISPATCHED', 'DELIVERED', 'CANCELLED']),
   "deliveryAddress": zod.string(),

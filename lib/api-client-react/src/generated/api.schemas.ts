@@ -16,6 +16,7 @@ export const UserRole = {
   PRODUCER: 'PRODUCER',
   RETAILER: 'RETAILER',
   CUSTOMER: 'CUSTOMER',
+  ADMIN: 'ADMIN',
 } as const;
 
 export interface User {
@@ -88,6 +89,32 @@ export interface Product {
   imageUrl: string;
   isOrganic: boolean;
   isActive: boolean;
+  /** @nullable */
+  catalogProductId: string | null;
+  /** @nullable */
+  varietyId: string | null;
+  /** @nullable */
+  varietyName: string | null;
+  /** @nullable */
+  mainCategory?: string | null;
+  /** @nullable */
+  subcategory?: string | null;
+  /**
+     * @minLength 3
+     * @maxLength 3
+     */
+  currency: string;
+  /** @nullable */
+  maxOrderQuantity: number | null;
+  /** @nullable */
+  qualityGrade: string | null;
+  /** @nullable */
+  harvestDate: string | null;
+  /** @nullable */
+  availableFrom: string | null;
+  deliveryAreas: string[];
+  deliveryFee: number;
+  isSample: boolean;
   createdAt: string;
 }
 
@@ -108,6 +135,28 @@ export interface ProductInput {
   imageUrl: string;
   isOrganic: boolean;
   isActive?: boolean;
+  catalogProductId: string;
+  /** @nullable */
+  varietyId?: string | null;
+  /**
+     * @minLength 3
+     * @maxLength 3
+     */
+  currency?: string;
+  /**
+     * @minimum 1
+     * @nullable
+     */
+  maxOrderQuantity?: number | null;
+  /** @nullable */
+  qualityGrade?: string | null;
+  /** @nullable */
+  harvestDate?: string | null;
+  /** @nullable */
+  availableFrom?: string | null;
+  deliveryAreas?: string[];
+  /** @minimum 0 */
+  deliveryFee?: number;
 }
 
 export interface ProductUpdate {
@@ -120,6 +169,25 @@ export interface ProductUpdate {
   /** @minimum 0 */
   stockQuantity?: number;
   isActive?: boolean;
+  /** @nullable */
+  varietyId?: string | null;
+  unit?: string;
+  /** @minimum 1 */
+  moq?: number;
+  /**
+     * @minimum 1
+     * @nullable
+     */
+  maxOrderQuantity?: number | null;
+  /** @nullable */
+  qualityGrade?: string | null;
+  /** @nullable */
+  harvestDate?: string | null;
+  /** @nullable */
+  availableFrom?: string | null;
+  deliveryAreas?: string[];
+  /** @minimum 0 */
+  deliveryFee?: number;
 }
 
 export interface OrderItemInput {
@@ -196,11 +264,234 @@ export interface Order {
   sellerId: string;
   sellerName: string;
   totalAmount: number;
+  currency: string;
   orderType: OrderOrderType;
   status: OrderStatus;
   deliveryAddress: string;
   createdAt: string;
   items: OrderLine[];
+}
+
+export interface CatalogCategory {
+  id: string;
+  name: string;
+  slug: string;
+  /** @nullable */
+  parentId: string | null;
+  /** @nullable */
+  parentSlug: string | null;
+  /** @nullable */
+  description: string | null;
+  sortOrder: number;
+  isActive: boolean;
+  productCount: number;
+}
+
+export type CatalogVarietyAttributes = { [key: string]: unknown };
+
+export interface CatalogVariety {
+  id: string;
+  name: string;
+  slug: string;
+  /** @nullable */
+  region: string | null;
+  attributes: CatalogVarietyAttributes;
+  isActive: boolean;
+}
+
+export interface CatalogProductSummary {
+  id: string;
+  name: string;
+  slug: string;
+  categoryId: string;
+  categoryName: string;
+  categorySlug: string;
+  /** @nullable */
+  subcategoryId: string | null;
+  /** @nullable */
+  subcategoryName: string | null;
+  /** @nullable */
+  subcategorySlug: string | null;
+  description: string;
+  /** @nullable */
+  scientificName: string | null;
+  defaultUnit: string;
+  /** @nullable */
+  imageUrl: string | null;
+  /** @nullable */
+  productForm: string | null;
+  /** @nullable */
+  seasonalAvailability: string | null;
+  /** @nullable */
+  storageInfo: string | null;
+  isActive: boolean;
+  varietyCount: number;
+  activeListingCount: number;
+}
+
+export interface CatalogProductPage {
+  items: CatalogProductSummary[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
+export type CatalogProductDetail = CatalogProductSummary & {
+  varieties: CatalogVariety[];
+  aliases: string[];
+  offers: Product[];
+};
+
+export type CatalogSuggestionStatus = typeof CatalogSuggestionStatus[keyof typeof CatalogSuggestionStatus];
+
+
+export const CatalogSuggestionStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+} as const;
+
+export interface CatalogSuggestion {
+  id: string;
+  name: string;
+  normalizedName: string;
+  /** @nullable */
+  categoryId: string | null;
+  /** @nullable */
+  categoryName: string | null;
+  /** @nullable */
+  varietyName: string | null;
+  description: string;
+  status: CatalogSuggestionStatus;
+  submittedBy: string;
+  submitterName: string;
+  createdAt: string;
+}
+
+export interface CatalogSuggestionInput {
+  /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  name: string;
+  /** @nullable */
+  categoryId?: string | null;
+  /**
+     * @maxLength 120
+     * @nullable
+     */
+  varietyName?: string | null;
+  /** @maxLength 1000 */
+  description: string;
+}
+
+export type CatalogSuggestionReviewStatus = typeof CatalogSuggestionReviewStatus[keyof typeof CatalogSuggestionReviewStatus];
+
+
+export const CatalogSuggestionReviewStatus = {
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+} as const;
+
+export interface CatalogSuggestionReview {
+  status: CatalogSuggestionReviewStatus;
+}
+
+export interface CatalogCategoryInput {
+  /**
+     * @minLength 2
+     * @maxLength 80
+     */
+  name: string;
+  /** @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$ */
+  slug: string;
+  /** @nullable */
+  parentId?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @minimum 0 */
+  sortOrder?: number;
+}
+
+export interface CatalogCategoryUpdate {
+  /**
+     * @minLength 2
+     * @maxLength 80
+     */
+  name?: string;
+  /** @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$ */
+  slug?: string;
+  /** @nullable */
+  parentId?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @minimum 0 */
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export type CatalogVarietyInputAttributes = { [key: string]: unknown };
+
+export interface CatalogVarietyInput {
+  /**
+     * @minLength 2
+     * @maxLength 100
+     */
+  name: string;
+  /**
+     * @maxLength 100
+     * @nullable
+     */
+  region?: string | null;
+  attributes?: CatalogVarietyInputAttributes;
+}
+
+export interface CatalogProductAdminInput {
+  /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  name: string;
+  categoryId: string;
+  description?: string;
+  /** @nullable */
+  scientificName?: string | null;
+  defaultUnit: string;
+  /** @nullable */
+  imageUrl?: string | null;
+  /** @nullable */
+  productForm?: string | null;
+  /** @nullable */
+  seasonalAvailability?: string | null;
+  /** @nullable */
+  storageInfo?: string | null;
+  aliases?: string[];
+  varieties?: CatalogVarietyInput[];
+}
+
+export interface CatalogProductAdminUpdate {
+  /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  name?: string;
+  categoryId?: string;
+  description?: string;
+  /** @nullable */
+  scientificName?: string | null;
+  defaultUnit?: string;
+  /** @nullable */
+  imageUrl?: string | null;
+  /** @nullable */
+  productForm?: string | null;
+  /** @nullable */
+  seasonalAvailability?: string | null;
+  /** @nullable */
+  storageInfo?: string | null;
+  isActive?: boolean;
+  aliases?: string[];
+  varieties?: CatalogVarietyInput[];
 }
 
 export type OrderBatch = Order[];
@@ -266,5 +557,48 @@ export type GetProductsMode = typeof GetProductsMode[keyof typeof GetProductsMod
 export const GetProductsMode = {
   WHOLESALE: 'WHOLESALE',
   RETAIL: 'RETAIL',
+} as const;
+
+export type ListCatalogProductsParams = {
+search?: string;
+categorySlug?: string;
+subcategorySlug?: string;
+varietySlug?: string;
+productForm?: string;
+/**
+ * @minimum 1
+ */
+page?: number;
+/**
+ * @minimum 1
+ * @maximum 50
+ */
+pageSize?: number;
+};
+
+export type ListAdminCatalogProductsParams = {
+search?: string;
+/**
+ * @minimum 1
+ */
+page?: number;
+/**
+ * @minimum 1
+ * @maximum 50
+ */
+pageSize?: number;
+};
+
+export type ListCatalogSuggestionsParams = {
+status?: ListCatalogSuggestionsStatus;
+};
+
+export type ListCatalogSuggestionsStatus = typeof ListCatalogSuggestionsStatus[keyof typeof ListCatalogSuggestionsStatus];
+
+
+export const ListCatalogSuggestionsStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
 } as const;
 

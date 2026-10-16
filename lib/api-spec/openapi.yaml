@@ -172,6 +172,256 @@ paths:
       responses:
         "204":
           description: Listing removed
+  /catalog/categories:
+    get:
+      operationId: listCatalogCategories
+      tags: [catalog]
+      summary: List active catalogue categories
+      responses:
+        "200":
+          description: Category tree represented as a flat parent-linked list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/CatalogCategory" }
+  /catalog/products:
+    get:
+      operationId: listCatalogProducts
+      tags: [catalog]
+      summary: Search the canonical product catalogue
+      parameters:
+        - name: search
+          in: query
+          schema: { type: string }
+        - name: categorySlug
+          in: query
+          schema: { type: string }
+        - name: subcategorySlug
+          in: query
+          schema: { type: string }
+        - name: varietySlug
+          in: query
+          schema: { type: string }
+        - name: productForm
+          in: query
+          schema: { type: string }
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 24 }
+      responses:
+        "200":
+          description: Matching canonical products and pagination details
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CatalogProductPage" }
+  /catalog/products/{slug}:
+    get:
+      operationId: getCatalogProduct
+      tags: [catalog]
+      summary: Get a canonical product with varieties and active supplier offers
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Product details and supplier offers
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CatalogProductDetail" }
+        "404":
+          description: Product not found
+  /catalog/suggestions:
+    post:
+      operationId: submitCatalogSuggestion
+      tags: [catalog]
+      summary: Suggest a missing catalogue product for administrator review
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CatalogSuggestionInput" }
+      responses:
+        "201":
+          description: Suggestion queued for review
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CatalogSuggestion" }
+        "409":
+          description: A matching product is already in the catalogue
+  /admin/catalog/categories:
+    get:
+      operationId: listAdminCatalogCategories
+      tags: [catalog-admin]
+      summary: List all categories for catalogue administration
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: All catalogue categories, including archived categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/CatalogCategory" }
+    post:
+      operationId: createCatalogCategory
+      tags: [catalog-admin]
+      summary: Create a category or subcategory
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CatalogCategoryInput" }
+      responses:
+        "201":
+          description: Category created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CatalogCategory" }
+  /admin/catalog/categories/{id}:
+    patch:
+      operationId: updateCatalogCategory
+      tags: [catalog-admin]
+      summary: Rename, reorganize, or archive a category
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CatalogCategoryUpdate" }
+      responses:
+        "200":
+          description: Category updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CatalogCategory" }
+        "404":
+          description: Category not found
+  /admin/catalog/products:
+    get:
+      operationId: listAdminCatalogProducts
+      tags: [catalog-admin]
+      summary: List all catalogue products for administration
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          schema: { type: string }
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 24 }
+      responses:
+        "200":
+          description: All catalogue products, including archived products
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CatalogProductPage" }
+    post:
+      operationId: createCatalogProduct
+      tags: [catalog-admin]
+      summary: Add an approved canonical product and its varieties
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CatalogProductAdminInput" }
+      responses:
+        "201":
+          description: Product added to the catalogue
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CatalogProductDetail" }
+  /admin/catalog/products/{id}:
+    patch:
+      operationId: updateCatalogProduct
+      tags: [catalog-admin]
+      summary: Edit or archive a canonical product
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CatalogProductAdminUpdate" }
+      responses:
+        "200":
+          description: Product updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CatalogProductDetail" }
+        "404":
+          description: Product not found
+  /admin/catalog/suggestions:
+    get:
+      operationId: listCatalogSuggestions
+      tags: [catalog-admin]
+      summary: Review pending product suggestions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [PENDING, APPROVED, REJECTED], default: PENDING }
+      responses:
+        "200":
+          description: Product suggestions
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/CatalogSuggestion" }
+  /admin/catalog/suggestions/{id}:
+    patch:
+      operationId: reviewCatalogSuggestion
+      tags: [catalog-admin]
+      summary: Approve or reject a product suggestion
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CatalogSuggestionReview" }
+      responses:
+        "200":
+          description: Suggestion reviewed
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CatalogSuggestion" }
+        "404":
+          description: Suggestion not found
   /orders:
     get:
       operationId: getOrders
@@ -316,7 +566,7 @@ components:
         id: { type: string }
         name: { type: string }
         email: { type: string }
-        role: { type: string, enum: [PRODUCER, RETAILER, CUSTOMER] }
+        role: { type: string, enum: [PRODUCER, RETAILER, CUSTOMER, ADMIN] }
         phone: { type: ["string", "null"] }
         address: { type: string }
         city: { type: string }
@@ -351,7 +601,7 @@ components:
         certifications: { type: string }
     Product:
       type: object
-      required: [id, producerId, producerName, producerCity, producerRating, title, description, category, unit, retailPrice, wholesalePrice, moq, stockQuantity, imageUrl, isOrganic, isActive, createdAt]
+      required: [id, producerId, producerName, producerCity, producerRating, title, description, category, unit, retailPrice, wholesalePrice, moq, stockQuantity, imageUrl, isOrganic, isActive, catalogProductId, varietyId, varietyName, currency, maxOrderQuantity, qualityGrade, harvestDate, availableFrom, deliveryAreas, deliveryFee, isSample, createdAt]
       properties:
         id: { type: string }
         producerId: { type: string }
@@ -369,10 +619,25 @@ components:
         imageUrl: { type: string }
         isOrganic: { type: boolean }
         isActive: { type: boolean }
+        catalogProductId: { type: ["string", "null"] }
+        varietyId: { type: ["string", "null"] }
+        varietyName: { type: ["string", "null"] }
+        mainCategory: { type: ["string", "null"] }
+        subcategory: { type: ["string", "null"] }
+        currency: { type: string, minLength: 3, maxLength: 3 }
+        maxOrderQuantity: { type: ["integer", "null"] }
+        qualityGrade: { type: ["string", "null"] }
+        harvestDate: { type: ["string", "null"], format: date }
+        availableFrom: { type: ["string", "null"], format: date }
+        deliveryAreas:
+          type: array
+          items: { type: string }
+        deliveryFee: { type: number }
+        isSample: { type: boolean }
         createdAt: { type: string, format: date-time }
     ProductInput:
       type: object
-      required: [title, description, category, unit, retailPrice, wholesalePrice, moq, stockQuantity, imageUrl, isOrganic]
+      required: [title, description, category, unit, retailPrice, wholesalePrice, moq, stockQuantity, imageUrl, isOrganic, catalogProductId]
       properties:
         title: { type: string, minLength: 2 }
         description: { type: string }
@@ -385,6 +650,17 @@ components:
         imageUrl: { type: string }
         isOrganic: { type: boolean }
         isActive: { type: boolean }
+        catalogProductId: { type: string, format: uuid }
+        varietyId: { type: ["string", "null"], format: uuid }
+        currency: { type: string, minLength: 3, maxLength: 3, default: INR }
+        maxOrderQuantity: { type: ["integer", "null"], minimum: 1 }
+        qualityGrade: { type: ["string", "null"] }
+        harvestDate: { type: ["string", "null"], format: date }
+        availableFrom: { type: ["string", "null"], format: date }
+        deliveryAreas:
+          type: array
+          items: { type: string }
+        deliveryFee: { type: number, minimum: 0, default: 0 }
     ProductUpdate:
       type: object
       properties:
@@ -394,6 +670,17 @@ components:
         wholesalePrice: { type: number, minimum: 0 }
         stockQuantity: { type: integer, minimum: 0 }
         isActive: { type: boolean }
+        varietyId: { type: ["string", "null"], format: uuid }
+        unit: { type: string }
+        moq: { type: integer, minimum: 1 }
+        maxOrderQuantity: { type: ["integer", "null"], minimum: 1 }
+        qualityGrade: { type: ["string", "null"] }
+        harvestDate: { type: ["string", "null"], format: date }
+        availableFrom: { type: ["string", "null"], format: date }
+        deliveryAreas:
+          type: array
+          items: { type: string }
+        deliveryFee: { type: number, minimum: 0 }
     OrderItemInput:
       type: object
       required: [productId, quantity]
@@ -428,7 +715,7 @@ components:
         unitPrice: { type: number }
     Order:
       type: object
-      required: [id, buyerId, buyerName, sellerId, sellerName, totalAmount, orderType, status, deliveryAddress, createdAt, items]
+      required: [id, buyerId, buyerName, sellerId, sellerName, totalAmount, currency, orderType, status, deliveryAddress, createdAt, items]
       properties:
         id: { type: string }
         buyerId: { type: string }
@@ -436,6 +723,7 @@ components:
         sellerId: { type: string }
         sellerName: { type: string }
         totalAmount: { type: number }
+        currency: { type: string }
         orderType: { type: string, enum: [WHOLESALE, RETAIL] }
         status: { type: string, enum: [PENDING, ACCEPTED, PROCESSING, DISPATCHED, DELIVERED, CANCELLED] }
         deliveryAddress: { type: string }
@@ -443,6 +731,169 @@ components:
         items:
           type: array
           items: { $ref: "#/components/schemas/OrderLine" }
+    CatalogCategory:
+      type: object
+      required: [id, name, slug, parentId, parentSlug, description, sortOrder, isActive, productCount]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        slug: { type: string }
+        parentId: { type: ["string", "null"], format: uuid }
+        parentSlug: { type: ["string", "null"] }
+        description: { type: ["string", "null"] }
+        sortOrder: { type: integer }
+        isActive: { type: boolean }
+        productCount: { type: integer }
+    CatalogVariety:
+      type: object
+      required: [id, name, slug, region, attributes, isActive]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        slug: { type: string }
+        region: { type: ["string", "null"] }
+        attributes: { type: object, additionalProperties: true }
+        isActive: { type: boolean }
+    CatalogProductSummary:
+      type: object
+      required: [id, name, slug, categoryId, categoryName, categorySlug, subcategoryId, subcategoryName, subcategorySlug, description, scientificName, defaultUnit, imageUrl, productForm, seasonalAvailability, storageInfo, isActive, varietyCount, activeListingCount]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        slug: { type: string }
+        categoryId: { type: string, format: uuid }
+        categoryName: { type: string }
+        categorySlug: { type: string }
+        subcategoryId: { type: ["string", "null"], format: uuid }
+        subcategoryName: { type: ["string", "null"] }
+        subcategorySlug: { type: ["string", "null"] }
+        description: { type: string }
+        scientificName: { type: ["string", "null"] }
+        defaultUnit: { type: string }
+        imageUrl: { type: ["string", "null"] }
+        productForm: { type: ["string", "null"] }
+        seasonalAvailability: { type: ["string", "null"] }
+        storageInfo: { type: ["string", "null"] }
+        isActive: { type: boolean }
+        varietyCount: { type: integer }
+        activeListingCount: { type: integer }
+    CatalogProductPage:
+      type: object
+      required: [items, page, pageSize, total, totalPages]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/CatalogProductSummary" }
+        page: { type: integer }
+        pageSize: { type: integer }
+        total: { type: integer }
+        totalPages: { type: integer }
+    CatalogProductDetail:
+      allOf:
+        - $ref: "#/components/schemas/CatalogProductSummary"
+        - type: object
+          required: [varieties, aliases, offers]
+          properties:
+            varieties:
+              type: array
+              items: { $ref: "#/components/schemas/CatalogVariety" }
+            aliases:
+              type: array
+              items: { type: string }
+            offers:
+              type: array
+              items: { $ref: "#/components/schemas/Product" }
+    CatalogSuggestion:
+      type: object
+      required: [id, name, normalizedName, categoryId, categoryName, varietyName, description, status, submittedBy, submitterName, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        normalizedName: { type: string }
+        categoryId: { type: ["string", "null"], format: uuid }
+        categoryName: { type: ["string", "null"] }
+        varietyName: { type: ["string", "null"] }
+        description: { type: string }
+        status: { type: string, enum: [PENDING, APPROVED, REJECTED] }
+        submittedBy: { type: string, format: uuid }
+        submitterName: { type: string }
+        createdAt: { type: string, format: date-time }
+    CatalogSuggestionInput:
+      type: object
+      required: [name, description]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        categoryId: { type: ["string", "null"], format: uuid }
+        varietyName: { type: ["string", "null"], maxLength: 120 }
+        description: { type: string, maxLength: 1000 }
+    CatalogSuggestionReview:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [APPROVED, REJECTED] }
+    CatalogCategoryInput:
+      type: object
+      required: [name, slug]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 80 }
+        slug: { type: string, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$" }
+        parentId: { type: ["string", "null"], format: uuid }
+        description: { type: ["string", "null"] }
+        sortOrder: { type: integer, minimum: 0, default: 0 }
+    CatalogCategoryUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 2, maxLength: 80 }
+        slug: { type: string, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$" }
+        parentId: { type: ["string", "null"], format: uuid }
+        description: { type: ["string", "null"] }
+        sortOrder: { type: integer, minimum: 0 }
+        isActive: { type: boolean }
+    CatalogVarietyInput:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 100 }
+        region: { type: ["string", "null"], maxLength: 100 }
+        attributes: { type: object, additionalProperties: true }
+    CatalogProductAdminInput:
+      type: object
+      required: [name, categoryId, defaultUnit]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        categoryId: { type: string, format: uuid }
+        description: { type: string }
+        scientificName: { type: ["string", "null"] }
+        defaultUnit: { type: string }
+        imageUrl: { type: ["string", "null"] }
+        productForm: { type: ["string", "null"] }
+        seasonalAvailability: { type: ["string", "null"] }
+        storageInfo: { type: ["string", "null"] }
+        aliases:
+          type: array
+          items: { type: string }
+        varieties:
+          type: array
+          items: { $ref: "#/components/schemas/CatalogVarietyInput" }
+    CatalogProductAdminUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        categoryId: { type: string, format: uuid }
+        description: { type: string }
+        scientificName: { type: ["string", "null"] }
+        defaultUnit: { type: string }
+        imageUrl: { type: ["string", "null"] }
+        productForm: { type: ["string", "null"] }
+        seasonalAvailability: { type: ["string", "null"] }
+        storageInfo: { type: ["string", "null"] }
+        isActive: { type: boolean }
+        aliases:
+          type: array
+          items: { type: string }
+        varieties:
+          type: array
+          items: { $ref: "#/components/schemas/CatalogVarietyInput" }
     OrderBatch:
       type: array
       items: { $ref: "#/components/schemas/Order" }

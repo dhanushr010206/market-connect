@@ -1,0 +1,820 @@
+# TASK: Expand LocalLink with a Comprehensive Indian Fruits, Vegetables, Grains and Agricultural Products Catalogue
+
+Act as a senior full-stack developer, agricultural marketplace specialist, database architect, and UI/UX designer.
+
+I already have an existing application called LocalLink, a cloud-based supply chain marketplace that connects customers and retailers directly with farmers, producers, manufacturers, and wholesalers.
+
+Your task is to expand the existing application by adding a large, well-organized catalogue of Indian agricultural products, indigenous fruits, exotic fruits, vegetables, exotic vegetables, grains, millets, pulses, spices, herbs, nuts, seeds, and related goods.
+
+IMPORTANT:
+- Modify the existing LocalLink project.
+- Do not create a separate application.
+- Preserve the existing authentication, database, marketplace, supplier dashboards, order system, and design.
+- Use the existing Next.js, TypeScript, Tailwind CSS, shadcn/ui, and Supabase architecture if already configured.
+- Do not replace functioning backend features with static mockups.
+- Make the new catalogue fully functional and connected to the database.
+- Use reusable components and seed scripts so more products can be added later.
+
+## 1. PRODUCT CATALOGUE STRUCTURE
+
+Create the following main categories and subcategories.
+
+### CATEGORY A: INDIAN INDIGENOUS AND COMMON FRUITS
+
+Include, at minimum:
+
+1. Mango
+   - Alphonso
+   - Badami
+   - Banganapalli
+   - Kesar
+   - Totapuri
+   - Neelam
+   - Mallika
+   - Raspuri
+   - Dasheri
+   - Langra
+   - Amrapali
+
+2. Banana
+   - Yelakki
+   - Nanjangud Rasabale
+   - Robusta
+   - Grand Naine
+   - Red banana
+   - Nendran
+   - Poovan
+   - Monthan
+
+3. Jackfruit
+   - Sweet jackfruit
+   - Firm-fleshed jackfruit
+   - Raw jackfruit
+
+4. Guava
+   - Allahabad Safeda
+   - Lalit
+   - Pink guava
+   - White guava
+
+5. Papaya
+   - Red Lady
+   - Arka Prabhath
+   - Arka Surya
+
+6. Sapota / Chikoo
+   - Cricket Ball
+   - Kalipatti
+   - Pala
+   - CO varieties where applicable
+
+7. Indian gooseberry / Amla
+8. Indian jujube / Ber
+9. Custard apple / Sitaphal
+10. Wood apple / Bel
+11. Bael fruit
+12. Jamun
+13. Indian fig
+14. Phalsa
+15. Karonda
+16. Tamarind
+17. Kokum
+18. Indian blackberry and regionally available native berries
+19. Sweet lime / Mosambi
+20. Indian lemon
+21. Acid lime
+22. Orange
+23. Pomegranate
+24. Watermelon
+25. Muskmelon
+26. Grapes
+27. Pineapple
+28. Coconut
+29. Tender coconut
+30. Dates
+31. Indian pear
+32. Indian plum varieties
+33. Seasonal citrus fruits
+34. Regional seasonal fruits
+
+Include regional varieties as separate selectable varieties associated with a common parent product wherever practical.
+
+### CATEGORY B: EXOTIC AND PREMIUM FRUITS
+
+Include:
+
+1. Dragon fruit
+   - White-fleshed
+   - Red-fleshed
+
+2. Avocado
+   - Hass
+   - Fuerte
+   - Other available varieties
+
+3. Kiwi
+4. Blueberry
+5. Raspberry
+6. Blackberry
+7. Strawberry
+8. Red currant
+9. Black currant
+10. Passion fruit
+11. Rambutan
+12. Mangosteen
+13. Durian
+14. Longan
+15. Lychee
+16. Mandarin orange varieties
+17. Imported apples
+18. Imported pears
+19. Imported grapes
+20. Imported plums
+21. Imported peaches
+22. Nectarines
+23. Cherries
+24. Persimmon
+25. Fig
+26. Pomelo
+27. Star fruit / Carambola
+28. Sweet tamarind
+29. Fresh dates
+30. Dried dates
+31. Prickly pear
+32. Imported melons
+33. Other seasonal exotic fruits
+
+Distinguish fresh, frozen, and dried products when relevant.
+
+Do not claim that every exotic fruit is locally available in every city. Availability must depend on supplier listings and location.
+
+### CATEGORY C: INDIAN VEGETABLES
+
+Include:
+
+- Tomato
+- Onion
+- Potato
+- Brinjal / Eggplant
+- Green chilli
+- Capsicum
+- Cucumber
+- Bottle gourd
+- Bitter gourd
+- Ridge gourd
+- Snake gourd
+- Ash gourd
+- Sponge gourd
+- Pointed gourd
+- Ivy gourd / Tindora
+- Pumpkin
+- Drumstick pods
+- Raw banana
+- Raw papaya
+- Raw jackfruit
+- Okra / Ladies' finger
+- Cluster beans
+- French beans
+- Broad beans
+- Cowpea pods
+- Green peas
+- Sweet corn
+- Baby corn
+- Cabbage
+- Cauliflower
+- Broccoli
+- Knol-khol
+- Carrot
+- Beetroot
+- Radish
+- Turnip
+- Sweet potato
+- Tapioca / Cassava
+- Yam
+- Elephant foot yam
+- Colocasia / Taro root
+- Lotus stem
+- Fresh ginger
+- Fresh turmeric
+- Garlic
+- Shallots / Sambar onions
+- Spring onions
+- Leeks
+- Green papaya
+- Raw mango
+- Fresh green chickpeas
+- Fresh pigeon peas
+- Other regionally grown vegetables
+
+### CATEGORY D: EXOTIC AND SPECIALTY VEGETABLES
+
+Include:
+
+1. Zucchini
+   - Green zucchini
+   - Yellow zucchini
+
+2. Red, yellow, orange, and green bell peppers
+3. Lettuce
+   - Iceberg
+   - Romaine
+   - Green leaf
+   - Red leaf
+   - Butterhead
+
+4. Kale
+5. Bok choy
+6. Pak choi
+7. Swiss chard
+8. Celery
+9. Asparagus
+10. Artichoke
+11. Brussels sprouts
+12. Purple cabbage
+13. Purple cauliflower
+14. Coloured carrots
+15. Coloured radish
+16. Cherry tomatoes
+17. Heirloom tomatoes
+18. Baby potatoes
+19. Baby carrots
+20. Baby corn
+21. Snow peas
+22. Sugar snap peas
+23. Edamame
+24. Fennel bulb
+25. Parsnip
+26. Celery root
+27. Kohlrabi
+28. Leek
+29. Shallots
+30. Microgreens
+31. Edible flowers
+32. Specialty mushrooms
+33. Button mushrooms
+34. Oyster mushrooms
+35. Shiitake mushrooms
+36. Enoki mushrooms
+37. Portobello mushrooms
+38. Other locally available specialty vegetables
+
+Do not assume all specialty vegetables are available from nearby farms. Allow suppliers to add them when they can actually supply them.
+
+### CATEGORY E: LEAFY GREENS AND HERBS
+
+Include:
+
+- Spinach
+- Amaranthus greens
+- Red amaranthus
+- Fenugreek leaves / Methi
+- Coriander leaves
+- Mint
+- Curry leaves
+- Dill leaves
+- Gongura
+- Malabar spinach
+- Drumstick leaves
+- Agathi leaves
+- Ponnanganni greens
+- Basale soppu
+- Moringa leaves
+- Mustard greens
+- Bathua
+- Purslane
+- Lettuce leaves
+- Kale leaves
+- Basil
+- Thai basil
+- Parsley
+- Rosemary
+- Thyme
+- Oregano
+- Sage
+- Chives
+- Lemongrass
+- Spring onion greens
+- Microgreens
+- Other regional edible greens
+
+Allow fresh herbs to be listed in bunches, grams, or kilograms depending on supplier practice.
+
+### CATEGORY F: GRAINS AND CEREALS
+
+Include:
+
+1. Rice
+   - Sona Masuri
+   - Basmati
+   - Jeera Samba
+   - Ponni
+   - Kolam
+   - Red rice
+   - Brown rice
+   - Black rice
+   - Hand-pounded rice
+   - Parboiled rice
+   - Raw rice
+   - Boiled rice
+   - Regional Karnataka rice varieties
+
+2. Wheat
+   - Whole wheat
+   - Wheat grain for milling
+   - Durum wheat
+   - Other regional varieties
+
+3. Maize
+   - Yellow maize
+   - White maize
+   - Sweet corn grain
+   - Feed maize
+
+4. Barley
+5. Oats
+6. Sorghum / Jowar
+7. Pearl millet / Bajra
+8. Finger millet / Ragi
+9. Foxtail millet
+10. Little millet
+11. Kodo millet
+12. Barnyard millet
+13. Proso millet
+14. Browntop millet
+15. Amaranth grain
+16. Quinoa
+17. Buckwheat
+18. Other regional cereals
+
+Include grain condition and processing information where relevant:
+- Raw grain
+- Cleaned grain
+- Polished or unpolished
+- Whole grain
+- Flour
+- Organic only when substantiated
+- Food grade or feed grade
+
+### CATEGORY G: PULSES AND LEGUMES
+
+Include:
+
+- Toor dal / Pigeon pea
+- Whole pigeon peas
+- Chana dal
+- Whole chickpeas
+- Kabuli chana
+- Kala chana
+- Green gram / Moong
+- Whole green gram
+- Moong dal
+- Black gram / Urad
+- Urad dal
+- Masoor dal
+- Whole lentils
+- Rajma
+- Cowpeas / Alasande
+- Horse gram / Huruli
+- Field beans / Avarekalu
+- Hyacinth beans
+- Dry peas
+- Green peas
+- Soybeans
+- Groundnuts
+- Fresh chickpeas
+- Fresh pigeon peas
+- Other regional pulses and legumes
+
+Distinguish fresh, dried, split, whole, and processed forms.
+
+### CATEGORY H: OILSEEDS AND OIL PRODUCTS
+
+Include:
+- Groundnut
+- Sesame
+- Sunflower seeds
+- Mustard seeds
+- Soybean
+- Flaxseed
+- Niger seed
+- Safflower seed
+- Coconut
+- Copra
+- Castor seed
+- Cottonseed
+- Sunflower oil
+- Groundnut oil
+- Sesame oil
+- Coconut oil
+- Mustard oil
+- Other regionally available edible oils
+
+Keep raw seeds, oil-bearing crops, and extracted edible oils clearly distinguished.
+
+### CATEGORY I: SPICES AND CONDIMENTS
+
+Include:
+- Black pepper
+- White pepper
+- Green cardamom
+- Black cardamom
+- Cloves
+- Cinnamon
+- Cassia
+- Nutmeg
+- Mace
+- Turmeric
+- Dry ginger
+- Fresh ginger
+- Garlic
+- Red chilli
+- Green chilli
+- Dried chilli
+- Byadagi chilli
+- Guntur chilli
+- Bird's eye chilli
+- Coriander seeds
+- Cumin
+- Fennel
+- Fenugreek seeds
+- Mustard seeds
+- Ajwain
+- Dill seeds
+- Poppy seeds where legally sold
+- Star anise
+- Bay leaves
+- Curry leaves
+- Asafoetida
+- Tamarind
+- Kokum
+- Dry mango powder
+- Saffron
+- Vanilla beans
+- Spice blends
+- Other regional spices
+
+Support whole, powdered, dried, fresh, and processed forms where appropriate.
+
+### CATEGORY J: NUTS, SEEDS AND DRIED FRUITS
+
+Include:
+- Almonds
+- Cashews
+- Pistachios
+- Walnuts
+- Hazelnuts
+- Pecans
+- Macadamia nuts
+- Brazil nuts
+- Peanuts
+- Coconut kernels
+- Chia seeds
+- Pumpkin seeds
+- Sunflower seeds
+- Watermelon seeds
+- Flaxseeds
+- Sesame seeds
+- Melon seeds
+- Hemp seeds where legally permitted
+- Raisins
+- Black raisins
+- Dates
+- Figs, dried
+- Apricots, dried
+- Prunes
+- Dried cranberries
+- Dried blueberries
+- Dried mango
+- Dried pineapple
+- Other dried fruits
+
+Clearly label raw, roasted, salted, unsalted, shelled, and unshelled variants.
+
+### CATEGORY K: ROOTS, TUBERS AND TRADITIONAL CROPS
+
+Include:
+- Potato
+- Sweet potato
+- Tapioca
+- Elephant foot yam
+- Greater yam
+- Lesser yam
+- Taro
+- Arrowroot
+- Turmeric rhizome
+- Ginger rhizome
+- Lotus root
+- Purple yam
+- Other traditional edible tubers
+
+### CATEGORY L: DAIRY AND OTHER LOCAL GOODS
+
+Support these additional categories if they fit the existing marketplace:
+
+- Milk
+- Curd
+- Buttermilk
+- Paneer
+- Ghee
+- Butter
+- Cheese
+- Eggs
+- Honey
+- Jaggery
+- Sugarcane
+- Fresh sugarcane juice
+- Coconut products
+- Flour and milled products
+- Pickles and preserves
+- Other locally produced packaged food
+
+Include appropriate storage and handling information for perishable products. Do not introduce unsupported food safety certifications or claims.
+
+## 2. PRODUCT VARIANTS AND DATABASE DESIGN
+
+Create a clean, normalized product catalogue.
+
+Each product should have:
+- Unique ID.
+- Canonical product name.
+- Slug.
+- Main category.
+- Subcategory.
+- Description.
+- Common names and regional names.
+- Scientific name where useful and verified.
+- Default unit of measurement.
+- Suitable product image.
+- Seasonal availability information where reliable.
+- Storage information where useful.
+- Active or inactive status.
+
+Each variety should have:
+- Parent product ID.
+- Variety name.
+- Region or origin where verified.
+- Relevant attributes such as colour, grade, size, or type.
+
+Examples:
+- Mango → Badami.
+- Mango → Alphonso.
+- Mango → Raspuri.
+- Rice → Sona Masuri.
+- Rice → Basmati.
+- Chilli → Byadagi.
+- Banana → Nanjangud Rasabale.
+
+Do not create a separate unrelated product for every spelling variation. Use canonical names and aliases to avoid duplicate search results.
+
+Supplier-specific information must be stored in supplier_listings, not the canonical products table.
+
+Each supplier listing should include:
+- Supplier business.
+- Product and optional variety.
+- Price.
+- Currency.
+- Unit.
+- Available quantity.
+- Minimum order quantity.
+- Optional maximum order quantity.
+- Quality grade.
+- Harvest or production date if applicable.
+- Available-from date.
+- Delivery area.
+- Delivery fee.
+- Listing status.
+- Product images.
+- Updated timestamp.
+
+Do not assign made-up live prices or inventory to canonical products.
+
+If demo prices are used, mark them as sample data and keep them separate from live supplier listings.
+
+## 3. UNITS AND QUANTITIES
+
+Support units appropriate to the product:
+- Kilogram (kg).
+- Gram (g).
+- Quintal (100 kg).
+- Metric tonne.
+- Piece.
+- Bunch.
+- Dozen.
+- Crate.
+- Box.
+- Bag.
+- Litre.
+- Millilitre.
+- Pack.
+
+Store the unit explicitly for every listing.
+
+Validate conversions only between compatible units. Never automatically treat a bunch, crate, or box as a fixed weight unless that conversion is explicitly defined for the listing.
+
+For wholesale purchases, support large quantities and minimum order amounts.
+
+For retail purchases, support small quantities where the supplier permits them.
+
+## 4. SUPPLIER CATALOGUE MANAGEMENT
+
+Update the supplier dashboard to include:
+- Browse the master product catalogue.
+- Search by name, variety, or category.
+- Select an existing product.
+- Select a variety.
+- Add a new product suggestion if the desired product is missing.
+- Enter listing-specific price and stock.
+- Select units.
+- Set minimum order quantity.
+- Add photos.
+- Set delivery areas.
+- Activate, pause, edit, or remove a listing.
+
+A supplier must not be able to change the canonical master catalogue or another supplier's listings directly.
+
+New product suggestions should be sent to an administrator for approval before being added to the shared master catalogue.
+
+Prevent duplicate product suggestions using normalized names, aliases, categories, and varieties.
+
+## 5. MARKETPLACE USER INTERFACE
+
+Upgrade the existing LocalLink marketplace with a beautiful, modern agricultural commerce interface.
+
+Design:
+- Forest green, fresh green, warm cream, white, and subtle harvest-gold accents.
+- Clean typography.
+- Attractive product imagery.
+- Responsive product cards.
+- Clear prices and units.
+- Modern filter panels.
+- Smooth but restrained interactions.
+- Good mobile usability.
+
+Create a category navigation page with attractive visual category cards.
+
+Display:
+- Fruits.
+- Exotic fruits.
+- Vegetables.
+- Exotic vegetables.
+- Leafy greens.
+- Grains and cereals.
+- Millets.
+- Pulses.
+- Spices.
+- Nuts and seeds.
+- Dried fruits.
+- Dairy and local goods.
+
+Every category card should open a working filtered marketplace page.
+
+Create a product detail page showing varieties, available suppliers, prices, minimum order quantities, available stock, and delivery areas.
+
+Include an alternative-supplier comparison section when multiple suppliers offer the same product.
+
+## 6. SEARCH AND FILTERS
+
+Implement functional database-backed search.
+
+Allow users to search using:
+- Common English names.
+- Indian regional names.
+- Kannada names or aliases where verified.
+- Product varieties.
+- Category names.
+- Relevant synonyms.
+
+Examples:
+- Ragi → Finger millet.
+- Huruli → Horse gram.
+- Alasande → Cowpea.
+- Avarekalu → Hyacinth bean or field bean, depending on the local product.
+- Badami → Badami mango.
+
+Do not incorrectly map ambiguous regional names to a single product without appropriate context.
+
+Filters:
+- Main category.
+- Subcategory.
+- Product variety.
+- Supplier location.
+- Available delivery area.
+- Retail or wholesale.
+- Price range.
+- Available quantity.
+- Minimum order quantity.
+- Supplier verification status.
+- Fresh, dried, frozen, or processed form.
+- Seasonal availability when reliable.
+
+Sorting:
+- Lowest price per comparable unit.
+- Lowest estimated landed cost.
+- Nearest supplier where location data permits.
+- Highest available quantity.
+- Recently updated.
+- Best supplier match.
+
+Use pagination and database indexes. Do not load the complete catalogue into the browser.
+
+## 7. ADMINISTRATOR FEATURES
+
+Extend the admin dashboard to manage:
+- Main categories.
+- Subcategories.
+- Products.
+- Product varieties.
+- Regional names and aliases.
+- Product images.
+- Product status.
+- Product suggestions.
+- Duplicate detection.
+- Supplier listings.
+- Reported products.
+
+Allow authorized administrators to add, edit, archive, and reactivate catalogue entries.
+
+Use safe database migrations and preserve existing records.
+
+Do not delete products that are referenced by existing orders. Archive them or mark them inactive instead.
+
+Historical order items must retain their original product name, variety, unit, and price snapshots.
+
+## 8. DATA SEEDING AND PRODUCT IMAGES
+
+Create an idempotent seed script that inserts the requested catalogue without creating duplicate rows when executed repeatedly.
+
+Use category and product slugs or stable identifiers to identify existing entries.
+
+Include a broad selection of the products specified in this prompt, with the catalogue organized for future expansion.
+
+If adding every listed variety at once is impractical, prioritize the complete category structure and the most common varieties first, then document the remaining catalogue entries as a clear continuation task.
+
+Use suitable licensed product images or locally stored placeholder images.
+
+Use descriptive alt text and optimize image sizes.
+
+Do not show unrelated stock photos as if they depict an exact rare variety. Use a generic category image when an exact variety image is unavailable.
+
+## 9. SECURITY AND BACKEND REQUIREMENTS
+
+Preserve Supabase authentication and the existing backend architecture.
+
+Use database migrations and appropriate foreign keys, indexes, and constraints.
+
+Enable and test Row Level Security.
+
+Ensure:
+- Public users can see only active public products and listings.
+- Suppliers can manage only their own listings.
+- Administrators can manage the shared catalogue.
+- Product suggestions are not automatically published.
+- Users cannot alter another user's orders.
+- No private API key is exposed to the browser.
+- Supplier stock and prices are validated server-side.
+- Catalogue operations do not corrupt historical orders.
+
+Validate inputs with Zod or the project's existing validation library.
+
+Provide clear error handling and loading states.
+
+## 10. TESTING AND ACCEPTANCE CRITERIA
+
+After implementing the catalogue, test that:
+
+1. All main categories and their subcategories display correctly.
+2. Product varieties are associated with the correct parent product.
+3. Search works with common names and configured aliases.
+4. Category filters and price filters work together.
+5. Product detail pages display real database records.
+6. Suppliers can create listings for existing catalogue products.
+7. Supplier-specific prices and stock remain separate.
+8. Missing products can be submitted as suggestions.
+9. Duplicate seed execution does not create duplicate records.
+10. Inactive products do not appear in normal public search.
+11. Existing orders retain their historical product details.
+12. RLS prevents unauthorized catalogue modifications.
+13. The UI works on mobile, tablet, and desktop.
+14. The production build completes successfully.
+
+Run linting, type checking, available tests, and the production build. Fix any errors introduced by the changes.
+
+## 11. FINAL IMPLEMENTATION INSTRUCTIONS
+
+First inspect the current LocalLink project and database schema.
+
+Then:
+1. Identify the existing category and product implementation.
+2. Propose a safe migration plan.
+3. Implement the normalized catalogue structure.
+4. Add the categories, subcategories, products, and varieties.
+5. Create the idempotent seed script.
+6. Integrate the catalogue into search and filters.
+7. Integrate it into the supplier dashboard.
+8. Add the administrative catalogue management interface.
+9. Test the application.
+10. Provide a concise report of files changed, migrations created, products and categories seeded, tests executed, and any remaining setup steps.
+
+Do not discard existing functionality, reset the production database, or replace real database integration with static data.
+
+Start implementing the changes now.

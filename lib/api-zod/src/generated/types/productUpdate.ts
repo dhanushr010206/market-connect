@@ -16,4 +16,23 @@ export interface ProductUpdate {
   /** @minimum 0 */
   stockQuantity?: number;
   isActive?: boolean;
+  /** @nullable */
+  varietyId?: string | null;
+  unit?: string;
+  /** @minimum 1 */
+  moq?: number;
+  /**
+     * @minimum 1
+     * @nullable
+     */
+  maxOrderQuantity?: number | null;
+  /** @nullable */
+  qualityGrade?: string | null;
+  /** @nullable */
+  harvestDate?: Date | null;
+  /** @nullable */
+  availableFrom?: Date | null;
+  deliveryAreas?: string[];
+  /** @minimum 0 */
+  deliveryFee?: number;
 }
