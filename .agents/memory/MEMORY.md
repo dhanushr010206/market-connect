@@ -1,1 +1,2 @@
 - [Generated API codegen quirks](api-codegen-quirks.md) — keep OpenAPI component names distinct from operation-derived names, and include DOM.Iterable when generated fetch code uses Headers.entries.
+- [Vite artifact build environment](vite-artifact-build-environment.md) — Vite config loads during builds without workflow-injected PORT or BASE_PATH; keep safe artifact defaults.
